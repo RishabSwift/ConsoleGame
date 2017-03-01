@@ -14,11 +14,12 @@ public class Main {
 	private ArrayList<Items> unlockedItems;
 	// Item list
 	private boolean hasGuy;
+	private boolean choice; //if they rob or save the guy
 	private Scanner scan = new Scanner(System.in);
 
 	//
 	enum Location {
-		OPERATING_ROOM, HALLWAY, BASEMENT, PARKING_LOT
+		OPERATING_ROOM, HALLWAY, BASEMENT, PARKING_LOT, CAF
 	}
 
 	private Location currentLocation;
@@ -39,7 +40,8 @@ public class Main {
 	private void playGame() {
 		showMessage("You wake up in an operating room. You see a dead body and a back pack");
 		askQuestion("Do you search the body or take the backpack?", "body:backpack");
-
+		// in the hospital room
+		// either get badge or back pack
 		if (userInput.equals("body")) {
 			unlockedItems.add(Items.BADGE);
 			showMessage("Congradulations, you unlock the badge");
@@ -48,20 +50,44 @@ public class Main {
 			showMessage("Congradulations, you unlock the backpack");
 
 		}
-		// in the hospital room
-		// either get badge or back pack
-
+		//in the hallway
+		unlockedPlaces.add(Location.HALLWAY);
+		currentLocation = Location.HALLWAY;
 		showMessage("You hear a noice and run into the hallway.");
 		askQuestion("Do you go left or right?", "right:left");
 		if (userInput.equals("right:")) {
-			if (hasGuy) {// determine if character has already met th
-
-			} else {
-				showMessage("You hear ");
-
+			// determine if character has already met the guy
+			if (choice){
+				// user has already robed or killed the guy 
+				showMessage("You see a staircase and go down them and arrive in the basemnt");
+				unlockedPlaces.add(Location.BASEMENT);
+				currentLocation = Location.BASEMENT;
+				// now you are in the basement
 			}
-		} else if (userInput.equals("left")) {
-
+			else {
+					showMessage("You hear someone crying and continue down the hall");
+					showMessage("You come across a guy who is hurt");
+					askQuestion("Do you save him?", "yes:no");
+					// decide to save or rob the guy
+					if (userInput.equals("yes")){
+						//save guy
+						showMessage("You carry the guy to the operating room");
+						currentLocation = Location.OPERATING_ROOM;
+						showMessage("Congratulations, you save the guy. He happends to know his way arround the hospital");
+						hasGuy = true;
+					}
+					else{
+						// rob guy
+					}
+			choice = true; 
+			}
+			
+		}
+		
+		else if (userInput.equals("left")) {
+			//in caf
+			unlockedPlaces.add(Location.CAF);
+			currentLocation = Location.CAF;
 		}
 
 		// askQuestion("Where do you wanna go?", "china:africa:");
@@ -144,7 +170,7 @@ public class Main {
 		List<String> acceptedList = Arrays.asList(acceptedInputArray);
 		if (!acceptedList.contains(userInput)) {
 			message = "Opps! You must either type \"" + acceptedInput.replace(":", "\" or \"")
-					+ "\". Please try again.";
+			+ "\". Please try again.";
 		}
 
 		return message;
