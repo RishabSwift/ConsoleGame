@@ -42,32 +42,36 @@ public class Main {
 		askQuestion("Do you search the body or take the backpack?", "body:backpack");
 		// in the hospital room
 		// either get badge or back pack
+		boolean backpack = false;
 		if (userInput.equals("body")) {
 			unlockedItems.add(Items.BADGE);
 			showMessage("Congradulations, you unlock the badge");
 		} else if (userInput.equals("backpack")) {
 			unlockedItems.add(Items.BACKPACK);
 			showMessage("Congradulations, you unlock the backpack");
-
+			backpack = true;
 		}
-		//in the hallway
-		unlockedPlaces.add(Location.HALLWAY);
-		currentLocation = Location.HALLWAY;
-		showMessage("You hear a noice and run into the hallway.");
-		askQuestion("Do you go left or right?", "right:left");
-		if (userInput.equals("right:")) {
-			// determine if character has already met the guy
-			if (choice){
-				// user has already robed or killed the guy 
-				showMessage("You see a staircase and go down them and arrive in the basemnt");
-				unlockedPlaces.add(Location.BASEMENT);
-				currentLocation = Location.BASEMENT;
-				// now you are in the basement
-			}
-			else {
+		int c = 0;
+		while(c == 0){
+			//in the hallway
+			unlockedPlaces.add(Location.HALLWAY);
+			currentLocation = Location.HALLWAY;
+			showMessage("You hear a noice and run into the hallway.");
+			askQuestion("Do you go left or right?", "right:left");
+			if (userInput.equals("right")) {
+				// determine if character has already met the guy
+				if (choice){
+					// user has already robed or killed the guy 
+					showMessage("You see a staircase and go down them and arrive in the basemnt");
+					unlockedPlaces.add(Location.BASEMENT);
+					currentLocation = Location.BASEMENT;
+					// now you are in the basement
+				}
+				else {
 					showMessage("You hear someone crying and continue down the hall");
 					showMessage("You come across a guy who is hurt");
 					askQuestion("Do you save him?", "yes:no");
+					choice = true; 
 					// decide to save or rob the guy
 					if (userInput.equals("yes")){
 						//save guy
@@ -75,19 +79,41 @@ public class Main {
 						currentLocation = Location.OPERATING_ROOM;
 						showMessage("Congratulations, you save the guy. He happends to know his way arround the hospital");
 						hasGuy = true;
+						showMessage("You are back in the operating room.");
+						String n; //determine if they have back pack or badge
+						//ask them if they want the backpack or badge
+						if (backpack){
+							n = "badge";
+						}
+						else{
+							n = "backpack";
+						}
+						askQuestion("Do you want to take the " + n + " ",  "yes:no");
+						if (n.equals("badge") && userInput.equals("yes")){
+							unlockedItems.add(Items.BADGE);
+							showMessage("Congradulations you have unlocked the badge");
+						}
+						else if (n.equals("backpack") && userInput.equals("yes")){
+							unlockedItems.add(Items.BACKPACK);
+							showMessage("Congradulation you have unlocked the backpack");
+						}
+						showMessage("The guy tells you that you guys need to leave");
+
 					}
 					else{
 						// rob guy
+
+
 					}
-			choice = true; 
+				}
+
 			}
-			
-		}
-		
-		else if (userInput.equals("left")) {
-			//in caf
-			unlockedPlaces.add(Location.CAF);
-			currentLocation = Location.CAF;
+
+			else{
+				//in caf
+				unlockedPlaces.add(Location.CAF);
+				currentLocation = Location.CAF;
+			}
 		}
 
 		// askQuestion("Where do you wanna go?", "china:africa:");
