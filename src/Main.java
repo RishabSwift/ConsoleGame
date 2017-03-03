@@ -25,8 +25,8 @@ public class Main {
 	}
 
 	private Location currentLocation;
-	private ArrayList<Location> unlockedPlaces;
-	private ArrayList<Location> locationHistory;
+	private List<Location> unlockedPlaces;
+	private List<Location> locationHistory;
 	private Location unlockedLocations[] = new Location[Location.values().length];
 	// LocationList
 
@@ -157,10 +157,9 @@ public class Main {
 	 */
 	private void resetGame() {
 		this.currentLocation = Location.OPERATING_ROOM;
-		this.unlockedLocations = null;
+//		this.unlockedLocations = ;
 		this.locationHistory = null;
 		this.hasGuy = false;
-		this.unlockedItems = null;
 	}
 
 	private void setUnlockedItems(String itemName) {
