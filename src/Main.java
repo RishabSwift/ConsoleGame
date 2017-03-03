@@ -8,13 +8,15 @@ public class Main {
 	private boolean isDead;
 
 	enum Items {
-		KEYS, BACKPACK, BADGE, GUN
+		KEYS, BACKPACK, BADGE, GUN, FLASHLIGHT
 	}
 
 	private ArrayList<Items> unlockedItems;
 	// Item list
 	private boolean hasGuy;
-	private boolean choice; //if they rob or save the guy
+	private boolean choice; // if they rob or save the guy
+	boolean backpack = false; // backpack
+	private boolean left = false; // if guy went left in the hallway
 	private Scanner scan = new Scanner(System.in);
 
 	//
@@ -42,7 +44,6 @@ public class Main {
 		askQuestion("Do you search the body or take the backpack?", "body:backpack");
 		// in the hospital room
 		// either get badge or back pack
-		boolean backpack = false;
 		if (userInput.equals("body")) {
 			unlockedItems.add(Items.BADGE);
 			showMessage("Congradulations, you unlock the badge");
@@ -51,78 +52,95 @@ public class Main {
 			showMessage("Congradulations, you unlock the backpack");
 			backpack = true;
 		}
-		int c = 0;
-		while(c == 0){
-			//in the hallway
-			unlockedPlaces.add(Location.HALLWAY);
+
+		while (true) {
+			// in hallway with guy
+			if (hasGuy && left == false) {
+				showMessage("The guy tells you that you need to leave.");
+				showMessage("You run into the hallway");
+			} else if (left == false) {
+				unlockedPlaces.add(Location.HALLWAY);
+				showMessage("You hear a noice and run into the hallway.");
+			}
 			currentLocation = Location.HALLWAY;
-			showMessage("You hear a noice and run into the hallway.");
+			// in the hallway
 			askQuestion("Do you go left or right?", "right:left");
-			if (userInput.equals("right")) {
+			if (userInput.equals("right") || left) {
 				// determine if character has already met the guy
-				if (choice){
-					// user has already robed or killed the guy 
+				if (choice) {
+					// user has already robed or killed the guy
 					showMessage("You see a staircase and go down them and arrive in the basemnt");
 					unlockedPlaces.add(Location.BASEMENT);
 					currentLocation = Location.BASEMENT;
 					// now you are in the basement
-				}
-				else {
+					break;
+				} else {
 					showMessage("You hear someone crying and continue down the hall");
 					showMessage("You come across a guy who is hurt");
 					askQuestion("Do you save him?", "yes:no");
-					choice = true; 
+					choice = true;
 					// decide to save or rob the guy
-					if (userInput.equals("yes")){
-						//save guy
+					if (userInput.equals("yes")) {
+						// save guy
 						showMessage("You carry the guy to the operating room");
 						currentLocation = Location.OPERATING_ROOM;
-						showMessage("Congratulations, you save the guy. He happends to know his way arround the hospital");
+						showMessage(
+								"Congratulations, you save the guy. He happends to know his way arround the hospital");
 						hasGuy = true;
 						showMessage("You are back in the operating room.");
-						String n; //determine if they have back pack or badge
-						//ask them if they want the backpack or badge
-						if (backpack){
+						String n; // determine if they have back pack or badge
+						// ask them if they want the backpack or badge
+						if (backpack) {
 							n = "badge";
-						}
-						else{
+						} else {
 							n = "backpack";
 						}
-						askQuestion("Do you want to take the " + n + " ",  "yes:no");
-						if (n.equals("badge") && userInput.equals("yes")){
+						askQuestion("Do you want to take the " + n + " ", "yes:no");
+						if (n.equals("badge") && userInput.equals("yes")) {
 							unlockedItems.add(Items.BADGE);
 							showMessage("Congradulations you have unlocked the badge");
-						}
-						else if (n.equals("backpack") && userInput.equals("yes")){
+							// unlocked badge
+						} else if (n.equals("backpack") && userInput.equals("yes")) {
 							unlockedItems.add(Items.BACKPACK);
 							showMessage("Congradulation you have unlocked the backpack");
+							// unlocked backpack
+						} else {
+							showMessage("Ok, you didn't unlock anything");
 						}
-						showMessage("The guy tells you that you guys need to leave");
-
 					}
-					else{
+
+					else {
 						// rob guy
 
+						if (backpack) {
+							showMessage("You found keys and a flashlight.");
+							showMessage("Let's put them in your backpack, they might be important.");
+							unlockedItems.add(Items.KEYS);
+							unlockedItems.add(Items.FLASHLIGHT);
+							// unlocked flashlight and keys, stored in backpack
+						} else {
+							showMessage("You don't have the room to store any more items");
+						}
 
+						break;
 					}
 				}
 
 			}
 
-			else{
-				//in caf
-				unlockedPlaces.add(Location.CAF);
-				currentLocation = Location.CAF;
+			else {
+				// go left
+				left = true;
+				if (backpack) {
+					// in caf
+					break;
+				} else {
+					showMessage("You don't have the keys to the cafateria. You have to go back");
+				}
+
 			}
 		}
 
-		// askQuestion("Where do you wanna go?", "china:africa:");
-		// if (userInput.equals("africa")) {
-		// showMessage("Every one loves africa!");
-		// } else {
-		// showMessage("I love china. Chinese food is the
-		// reason I live");
-		// }
 	}
 
 	/**
