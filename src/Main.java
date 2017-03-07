@@ -61,6 +61,9 @@ public class Main {
 	// Doors are permanently locked if user has guessed the pin incorrectly too
 	// many times
 	private boolean caffParkingLotDoorsPermanentlyLocked = false;
+	
+	// Variable to store which vehicle the user chose
+	String vehicle;
 
 	/**
 	 * The main method
@@ -175,7 +178,7 @@ public class Main {
 					// User has met the guy before already
 				} else {
 					showMessage("There is a dark, old door in front of you.");
-					showMessage("You open it slowly and go through it...");
+					showMessage("You open it slowly, after a shrilling creak you go through it...");
 
 					// update user location to the basement
 					stateLocation(Location.BASEMENT);
@@ -189,7 +192,7 @@ public class Main {
 
 			// If the user has never been to the operating room
 			if (!userHasBeenTo(Location.OPERATING_ROOM)) {
-				showMessage("You wake up in an operating room.");
+				showMessage("You wake up in an operating room. A bright white light emits from a lamp at the far right corner of the room.");
 				locationHistory.add(Location.OPERATING_ROOM);
 			}
 
@@ -198,7 +201,7 @@ public class Main {
 			if (saveSteven) {
 				showMessage("You are now in the operating room...");
 				showMessage(
-						"You seem to have saved him using medication. He seems pretty stable. He introduces himself as Steven.");
+						"You seem to have saved him using medication located around the room. He seems pretty stable. He introduces himself as Steven.");
 				showMessage("You are now looking around in the room...");
 			}
 
@@ -206,19 +209,19 @@ public class Main {
 			// want to pick
 			if (!userHas(Items.BACKPACK) && !userHas(Items.BADGE)) {
 
-				showMessage("You see a dead body and a back pack");
+				showMessage("You see a dead body and a back pack.");
 				askQuestion("Do you search the body or take the backpack?", "body:backpack");
 
 				// If the user wants to search the body...
 				if (userInput.equals("body")) {
 					// Add item to the user inventory
 					unlockedItems.add(Items.BADGE);
-					showMessage("Congradulations, you found a badge in the dead body.");
+					showMessage("The body reeks of sweat and death, but after searching for 2 agonizing minutes you found a badge on the dead body.");
 
 				} else if (userInput.equals("backpack")) {
 					unlockedItems.add(Items.BACKPACK);
 
-					showMessage("Okay, you now have the backpack. You can use this to store stuff in...");
+					showMessage("Okay, you now have the backpack. You can use this to store more stuff in...");
 				}
 
 				// If user has the backpack but no badge, ask if they want to
@@ -240,7 +243,7 @@ public class Main {
 				askQuestion("You have found a backpack... Do you want to take it?", "yes:no");
 				if (userInput.equals("yes")) {
 					unlockedItems.add(Items.BACKPACK);
-					showMessage("You are now carrying a backpack.");
+					showMessage("You sling the backpack on to your back. A slight and subtle chill runs down your spine. You are unsure wether you feel safer or not.");
 				} else {
 					showMessage("Okay, no problem.");
 				}
@@ -253,7 +256,7 @@ public class Main {
 			if (userHasMetSteven) {
 				showMessage("You now slowly make your way outside the hallway...");
 			} else {
-				showMessage("You hear a noise and run outside");
+				showMessage("You hear a noise and run outside.");
 			}
 
 			// Update user's location to the hallway
@@ -267,24 +270,24 @@ public class Main {
 
 			// If the user has a flashlight, turn it on
 			if (userHas(Items.FLASHLIGHT)) {
-				showMessage("Luckly, you have a flashlight in your backpack so you use it.");
+				showMessage("Luckily, you have a flashlight in your backpack so you use it.");
 			} else {
 				// Since the user has no flashlight... ask if they want to turn
 				// switch on
-				showMessage("You cannot see anything but there is a light switch on the right side of the wall.");
+				showMessage("You feel something moving in the dark. You cannot see anything but you feel a light switch on the right side of the wall.");
 				askQuestion("Do you want to turn the switch on?", "yes:no");
 
 				// User dies after turning on the light
 				if (userInput.equals("yes")) {
-					showMessage("You are dead. The loose wiring in the light switch got you killed.");
+					showMessage("You feel massive amounts of electricity surging through your body. The loose wiring in the light switch got you electrocuted. You are killed.");
 					userHasDied();
 					break;
 				}
 			}
 
 			showMessage(
-					"There does not seem to be anything in the basement. You want to get out and you see 2 exit doors.");
-			askQuestion("Do you want to exit from door 1 or door 2?", "door 1:door 2");
+					"There does not seem to be anything in the basement. You want to get out and you see 2 sets of doors. The first set of doors was painted a dull gray fashioned with a cold, pair of steel handles, while the second has a dried red liquid splattered across.");
+			askQuestion("Do you want to go through from the first or the second doors?", "door 1:door 2");
 
 			// Door 1 leads to the cafeteria
 			if (userInput.equals("door 1")) {
@@ -305,7 +308,7 @@ public class Main {
 				showMessage("You thought it was an exit, but it seems to be an entrance to the cafeteria.");
 				showMessage("Before you could go back, the doors behind you are locked.");
 			}
-
+			showMessage("You find yourself in a vast room. You see rows of tables stretching form wall to wall.");
 			showMessage("You smell food somewhere, your stomach grumbles in response.");
 			showMessage("You go towards the scent and you notice a warm and inviting plate of dinner.");
 
@@ -314,7 +317,8 @@ public class Main {
 			// Eat food?
 			if (userInput.equals("yes")) {
 				showMessage("Yum... It seems pretty tasty...");
-				showMessage("You are now dead because of food poisining. Sucks to be you.");
+				showMessage("After finishing the meal, you sit up from the table. You're tounge sits uncomfortably in your mouth, an unpleasant taste is lingering there. You collapse to the floor.");
+				showMessage("The food was laced with rat poison. You died");
 				userHasDied();
 				break;
 
@@ -382,8 +386,7 @@ public class Main {
 						int parkingLotDoorPin = generateRandomNumberBetween(100, 999);
 
 						// Validate the pin
-						boolean doorPinCorrect = validatePin(parkingLotDoorPin, 3,
-								"A buzzer buzzes twice. The pin you entered is wrong.");
+						boolean doorPinCorrect = validatePin(parkingLotDoorPin, 3, "A buzzer buzzes twice. The pin you entered is wrong.");
 
 						// If the user guessed the pin correctly
 						if (doorPinCorrect) {
@@ -511,6 +514,7 @@ public class Main {
 			} // end: has steven
 
 			break;
+
 		}
 
 	}
