@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import hsa_new.Console;
 
 public class Main {
 
@@ -11,15 +12,29 @@ public class Main {
 	private Scanner scan = new Scanner(System.in);
 
 	// All different locations in the game
-
 	enum Location {
 		OPERATING_ROOM, HALLWAY, BASEMENT, PARKING_LOT, CAFETERIA
 	}
 
 	// All items in the game
-
 	enum Items {
 		KEYS, BACKPACK, BADGE, GUN, FLASHLIGHT, PHONE
+	}
+
+	// Vehicles in the game
+	enum Vehicles {
+
+		 MERCEDES_BENZ(30), TRUCK(75), SCHOOL_BUS(75);
+
+		private int successRate;
+
+		private Vehicles(int success) {
+			this.successRate = success;
+		}
+
+		private int getSuccessRate() {
+			return successRate;
+		}
 	}
 
 	// The current user location
@@ -37,6 +52,9 @@ public class Main {
 	// If user has saved Steven
 	private boolean saveSteven = false;
 
+	// User vehicle
+	private Vehicles userVehicle;
+
 	// The current user input is whatever the user entered last in console
 	private String userInput;
 
@@ -50,6 +68,7 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		Console c = new Console();
 		Main consoleGame = new Main();
 		consoleGame.resetGame();
 		consoleGame.playGame();
@@ -60,50 +79,8 @@ public class Main {
 	 */
 	private void playGame() {
 
-		stateLocation(Location.OPERATING_ROOM);
+		stateLocation(Location.PARKING_LOT);
 
-	}
-
-	/**
-	 * Generate a random number between a range which includes the starting and
-	 * end number
-	 * 
-	 * @param start
-	 *            Start range
-	 * @param end
-	 *            End range
-	 * @return
-	 */
-	private int generateRandomNumberBetween(int start, int end) {
-		int size = end - start + 1; // include the end number
-		return (int) (Math.random() * size) + start;
-	}
-
-	/**
-	 * Validate user input against a pin that is asked to the user
-	 * 
-	 * @param pin
-	 * @param maxTries
-	 * @param errorMessage
-	 * @return
-	 */
-	private boolean validatePin(int pin, int maxTries, String errorMessage) {
-		System.out.println(pin);
-		int totalTries = 0;
-		// If user has not yet reached his max try limit
-		while (totalTries < maxTries) {
-			int userInputPin = scan.nextInt();
-			// If user has entered the right pin, we simply return
-			if (userInputPin == pin) {
-				return true;
-			} else {
-				// If user has entered an incorrect pin, show error message
-				showMessage(errorMessage);
-			}
-			totalTries++;
-		}
-
-		return false;
 	}
 
 	private void stateLocation(Location location) {
@@ -371,20 +348,19 @@ public class Main {
 			askQuestion("Do you go down to the basement or through the exit?", "basement:exit");
 
 			if (userInput.equals("basement")) {
-				
+
 				if (lastLocation() == Location.BASEMENT) {
 					showMessage("You are now on your way back to the basement...");
 				}
 				stateLocation(Location.BASEMENT);
 				break;
-				
+
 			} else if (userInput.equals("exit")) {
 
 				if (hasSteven == true) {
 					showMessage(
 							"You try to open the door but it is locked. You notice that there is a number pad to the left of the door. Luckily, Steven reassures you that he knows the code, he goes towards the number pad and enters the pin.");
-					showMessage(
-							"The door clicks. You push it open and a gust of cold wind greets you. You look around and notice that you are in the parking lot of the hospital.");
+					showMessage("The door clicks. You push it open and a gust of cold wind greets you. ");
 					unlockedPlaces.add(Location.PARKING_LOT);
 					stateLocation(Location.PARKING_LOT);
 					break;
@@ -395,7 +371,8 @@ public class Main {
 					showMessage(
 							"You try to open the door but it is locked. You notice that there is a number pad to the left of the door. The 3 spaces displayed on the top of the number pad suggests that there is a 3 number pin.");
 
-					// If the cafeteria doors to the parking lot are permanently locked
+					// If the cafeteria doors to the parking lot are permanently
+					// locked
 					if (caffParkingLotDoorsPermanentlyLocked) {
 						showMessage(
 								"... However, you have already guessed too many times which caused the doors to be permanently locked.");
@@ -411,7 +388,7 @@ public class Main {
 						// If the user guessed the pin correctly
 						if (doorPinCorrect) {
 							showMessage(
-									"You guessed the pin correctly! The door clicks. You push it open and a gust of cold wind greets you. You look around and notice that you are in the parking lot of the hospital.");
+									"You guessed the pin correctly! The door clicks. You push it open and a gust of cold wind greets you.");
 							unlockedPlaces.add(Location.PARKING_LOT);
 							stateLocation(Location.PARKING_LOT);
 							break;
@@ -424,19 +401,114 @@ public class Main {
 					}
 
 				} // end if: user does not have Steven
-				
-				
-				// Since the user can not exit the cafeteria upon guessing the code incorrectly, they must now go to the basement.
+
+				// Since the user can not exit the cafeteria upon guessing the
+				// code incorrectly, they must now go to the basement.
 				showMessage("You have no option so you take the door to the basement.");
 				locationHistory.add(Location.BASEMENT);
 				stateLocation(Location.BASEMENT);
 				break;
-				
+
 			} // end if: user input equals exit
 
 			break;
 
 		case PARKING_LOT:
+
+			showMessage("It's pretty dark out here. You see cars. It seems to be a parking lot.");
+
+			// Show message saying user has an interest in cars
+			showMessage(hasSteven ? "Steven seems" : "You seem" + " to have an interest in cars so you look around.");
+
+			showMessage("You see a truck, Mercedes Benz and a school bus.");
+			askQuestion("Which one do you want?", "truck:mercedes:school bus");
+
+			String vehicleInfo;
+
+			// set the vehicle text as whatever vehicle they chose
+			if (userInput.equals("truck")) {
+
+				userVehicle = Vehicles.TRUCK;
+				vehicleInfo = "old, rusty, big truck.";
+
+			} else if (userInput.equals("mercedes")) {
+
+				userVehicle = Vehicles.MERCEDES_BENZ;
+				vehicleInfo = "Mercedes Benz S Class 2017 Model.";
+
+			} else {
+				userVehicle = Vehicles.SCHOOL_BUS;
+				vehicleInfo = "School bus.";
+			}
+
+			showMessage("Okay, you now have a " + vehicleInfo);
+			showMessage("You start driving away to escape. But you see that the door is locked with a key");
+
+			// If user picked up Steven, they can escape without any problem
+			if (hasSteven) {
+				showMessage("Thankfully, Steven has the key to the gate so he unlocks it.");
+				userHasEscaped();
+			} else {
+
+				askQuestion(
+						"Since you don't know the pin, you can either break through the gate by driving or try guessing the pin. Which one do you want?",
+						"guess:drive through");
+
+				// if user wants to drive through
+				if (userInput.equals("drive through")) {
+
+					showMessage("You start driving in full speed.");
+					showMessage("As you get closer to the gate, you get nervous.");
+					
+					// generate a random number
+					
+					int randomNumber = generateRandomNumberBetween(0, 100);
+					System.out.println(randomNumber);
+					System.out.println(userVehicle.getSuccessRate());
+					
+					// randomly check if the random number is less than the success rate.
+					// the higher the success rate of vehicle, the more chances it will have of going through
+					if (userVehicle.getSuccessRate() >= randomNumber) {
+						// user can break through
+					
+						showMessage("The front of the car slams the gate, breaking it open.");
+						userHasEscaped();
+						break;
+				
+					} else {
+						//user cannot break through
+						showMessage("Your vehicle slams the door at a high speed, killing you.");
+						userHasDied();
+						break;
+					}
+					
+					// if user wants to guess pin
+				} else {
+
+					showMessage(
+							"You have to guess the pin to get out of the parking lot. You see a box where you enter the pin.");
+					showMessage("The pin is 3 numbers and you have 3 guesses before it permanently locks.");
+
+					int guessedPin = generateRandomNumberBetween(100, 999);
+					boolean correctGuess = validatePin(guessedPin, 3, "That is not the right pin. Try again.");
+
+					// Check if the user guessed the right pin
+					if (correctGuess) {
+						showMessage("That is the right pin!");
+						// If the guess is correct, the user escapes
+						// successfully and the game ends
+						userHasEscaped();
+						break;
+
+						// If the guess is wrong
+					} else {
+
+						showMessage("You have guessed too many times. You have no option but to drive through.");
+					}
+
+				} // end: guess pin
+
+			} // end: has steven
 
 			break;
 		}
@@ -461,8 +533,12 @@ public class Main {
 		locationHistory = new ArrayList<Location>();
 		unlockedItems = new ArrayList<Items>();
 
-		this.currentLocation = Location.OPERATING_ROOM;
-		this.hasSteven = false;
+		currentLocation = Location.OPERATING_ROOM;
+
+		hasSteven = false;
+		userHasMetSteven = false;
+		saveSteven = false;
+		userVehicle = null;
 
 	}
 
@@ -520,6 +596,48 @@ public class Main {
 	}
 
 	/**
+	 * Generate a random number between a range which includes the starting and
+	 * end number
+	 * 
+	 * @param start
+	 *            Start range
+	 * @param end
+	 *            End range
+	 * @return
+	 */
+	private int generateRandomNumberBetween(int start, int end) {
+		int size = end - start + 1; // include the end number
+		return (int) (Math.random() * size) + start;
+	}
+
+	/**
+	 * Validate user input against a pin that is asked to the user
+	 * 
+	 * @param pin
+	 * @param maxTries
+	 * @param errorMessage
+	 * @return
+	 */
+	private boolean validatePin(int pin, int maxTries, String errorMessage) {
+		System.out.println(pin);
+		int totalTries = 0;
+		// If user has not yet reached his max try limit
+		while (totalTries < maxTries) {
+			int userInputPin = scan.nextInt();
+			// If user has entered the right pin, we simply return
+			if (userInputPin == pin) {
+				return true;
+			} else {
+				// If user has entered an incorrect pin, show error message
+				showMessage(errorMessage);
+			}
+			totalTries++;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Check if user has an item
 	 * 
 	 * @param item
@@ -550,6 +668,28 @@ public class Main {
 			playGame();
 		} else {
 			showMessage("Guess you will never be able to escape this building.");
+		}
+	}
+
+	/**
+	 * User has successfully escaped
+	 */
+	private void userHasEscaped() {
+
+		// Show them a message about user escaping
+		if (hasSteven) {
+			showMessage("You and Steven break free successfully.");
+		} else {
+			showMessage("You break free and drive as fast as you can to get away from this scary place.");
+		}
+
+		askQuestion("Since you have bravely escaped, do you want to try again?", "yes:nope");
+
+		if (userInput.equals("yes")) {
+			resetGame();
+			playGame();
+		} else {
+			showMessage("Okay, thanks for playing.");
 		}
 	}
 
