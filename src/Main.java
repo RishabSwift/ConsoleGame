@@ -1,7 +1,13 @@
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+
+import javax.imageio.ImageIO;
+
 import hsa_new.Console;
 
 public class Main {
@@ -24,7 +30,7 @@ public class Main {
 	// Vehicles in the game
 	enum Vehicles {
 
-		 MERCEDES_BENZ(30), TRUCK(75), SCHOOL_BUS(75);
+		MERCEDES_BENZ(30), TRUCK(75), SCHOOL_BUS(75);
 
 		private int successRate;
 
@@ -61,7 +67,7 @@ public class Main {
 	// Doors are permanently locked if user has guessed the pin incorrectly too
 	// many times
 	private boolean caffParkingLotDoorsPermanentlyLocked = false;
-	
+
 	// Variable to store which vehicle the user chose
 	String vehicle;
 
@@ -71,7 +77,6 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Console c = new Console();
 		Main consoleGame = new Main();
 		consoleGame.resetGame();
 		consoleGame.playGame();
@@ -87,13 +92,32 @@ public class Main {
 	}
 
 	private void stateLocation(Location location) {
+		BufferedImage creepyBasement = null;
+		BufferedImage creepyCafeteria = null;
+		BufferedImage creepyHallway = null;
+		BufferedImage creepyOperatingRoom = null;
+		BufferedImage creepyParkingLot = null;
+		BufferedImage creepyRoad = null;
+		try {
+			creepyBasement = ImageIO.read(new File("CreepyBasement.png"));
+			creepyCafeteria = ImageIO.read(new File("CreepyCafeteria.jpg"));
+			creepyHallway = ImageIO.read(new File("CreepyHallway.jpg"));
+			creepyOperatingRoom = ImageIO.read(new File("CreepyOperatingRoom.jpg"));
+			creepyParkingLot = ImageIO.read(new File("CreepyParkingLot.png"));
+			creepyRoad = ImageIO.read(new File("CreepyRoad.jpg"));
+
+		} catch (IOException e) {
+			System.err.println("There was ana error loading the image.");
+			e.printStackTrace();
+		}
+		Console c = new Console();
 
 		// Set the current location to whatever the location passed is
 		currentLocation = location;
 
 		switch (location) {
 		case HALLWAY:
-
+			c.drawImage(creepyHallway, 400, 100, 100, 100, null);
 			// If the user has never been to a hallway, show them the message
 			if (!userHasBeenTo(Location.HALLWAY)) {
 				showMessage("The hallway seems to be a dark and scary place.");
@@ -189,7 +213,7 @@ public class Main {
 			break;
 
 		case OPERATING_ROOM:
-
+			c.drawImage(creepyOperatingRoom, 400, 100, 100, 100, null);
 			// If the user has never been to the operating room
 			if (!userHasBeenTo(Location.OPERATING_ROOM)) {
 				showMessage("You wake up in an operating room. A bright white light emits from a lamp at the far right corner of the room.");
@@ -265,7 +289,7 @@ public class Main {
 			break;
 
 		case BASEMENT:
-
+			c.drawImage(creepyBasement, 400, 100, 100, 100, null);
 			showMessage("The basement is a dark and cold place.");
 
 			// If the user has a flashlight, turn it on
@@ -292,9 +316,10 @@ public class Main {
 			// Door 1 leads to the cafeteria
 			if (userInput.equals("door 1")) {
 				locationHistory.add(Location.CAFETERIA);
-
-				// Door 2 leads to the parking lot
-			} else {
+				stateLocation(Location.CAFETERIA);
+			}
+				// Door 2 leads to the parking lot 
+			else {
 				locationHistory.add(Location.PARKING_LOT);
 				stateLocation(Location.PARKING_LOT);
 			}
@@ -302,7 +327,7 @@ public class Main {
 			break;
 
 		case CAFETERIA:
-
+			c.drawImage(creepyCafeteria, 400, 100, 100, 100, null);
 			// If the last location is basement, show them another message
 			if (lastLocation() == Location.BASEMENT) {
 				showMessage("You thought it was an exit, but it seems to be an entrance to the cafeteria.");
@@ -417,7 +442,7 @@ public class Main {
 			break;
 
 		case PARKING_LOT:
-
+			c.drawImage(creepyParkingLot, 400, 100, 100, 100, null);
 			showMessage("It's pretty dark out here. You see cars. It seems to be a parking lot.");
 
 			// Show message saying user has an interest in cars
@@ -462,29 +487,29 @@ public class Main {
 
 					showMessage("You start driving in full speed.");
 					showMessage("As you get closer to the gate, you get nervous.");
-					
+
 					// generate a random number
-					
+
 					int randomNumber = generateRandomNumberBetween(0, 100);
 					System.out.println(randomNumber);
 					System.out.println(userVehicle.getSuccessRate());
-					
+
 					// randomly check if the random number is less than the success rate.
 					// the higher the success rate of vehicle, the more chances it will have of going through
 					if (userVehicle.getSuccessRate() >= randomNumber) {
 						// user can break through
-					
+
 						showMessage("The front of the car slams the gate, breaking it open.");
 						userHasEscaped();
 						break;
-				
+
 					} else {
 						//user cannot break through
 						showMessage("Your vehicle slams the door at a high speed, killing you.");
 						userHasDied();
 						break;
 					}
-					
+
 					// if user wants to guess pin
 				} else {
 
@@ -593,7 +618,7 @@ public class Main {
 		List<String> acceptedList = Arrays.asList(acceptedInputArray);
 		if (!acceptedList.contains(userInput)) {
 			message = "Opps! You must either type \"" + acceptedInput.replace(":", "\" or \"")
-					+ "\". Please try again.";
+			+ "\". Please try again.";
 		}
 
 		return message;
