@@ -1,7 +1,16 @@
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+
 import hsa_new.Console;
 
 public class Main {
@@ -24,7 +33,7 @@ public class Main {
 	// Vehicles in the game
 	enum Vehicles {
 
-		 MERCEDES_BENZ(30), TRUCK(75), SCHOOL_BUS(75);
+		MERCEDES_BENZ(30), TRUCK(75), SCHOOL_BUS(75);
 
 		private int successRate;
 
@@ -61,9 +70,23 @@ public class Main {
 	// Doors are permanently locked if user has guessed the pin incorrectly too
 	// many times
 	private boolean caffParkingLotDoorsPermanentlyLocked = false;
-	
+
 	// Variable to store which vehicle the user chose
 	String vehicle;
+
+	// All images should have the same width/height for the best results
+	private static final int IMAGE_HEIGHT = 676;
+	private static final int IMAGE_WIDTH = 1200;
+
+	private Console c = new Console(40, 150, "Exitus");
+
+	private BufferedImage basementImage = null;
+	private BufferedImage cafeteriaImage = null;
+	private BufferedImage hallwayImage = null;
+	private BufferedImage operatingRoomImage = null;
+	private BufferedImage parkingLotImage = null;
+	private BufferedImage roadImage = null;
+	private BufferedImage startImage = null;
 
 	/**
 	 * The main method
@@ -71,10 +94,31 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Console c = new Console();
+
 		Main consoleGame = new Main();
 		consoleGame.resetGame();
+		consoleGame.loadImages();
 		consoleGame.playGame();
+	}
+
+	/**
+	 * Load images and store in variables
+	 */
+	private void loadImages() {
+
+		try {
+			basementImage = ImageIO.read(new File("CreepyBasement.jpg"));
+			cafeteriaImage = ImageIO.read(new File("CreepyCafeteria.jpg"));
+			hallwayImage = ImageIO.read(new File("CreepyHallway.jpg"));
+			operatingRoomImage = ImageIO.read(new File("CreepyOperatingRoom.jpg"));
+			parkingLotImage = ImageIO.read(new File("CreepyParkingLot.png"));
+			roadImage = ImageIO.read(new File("CreepyRoad.jpg"));
+
+			startImage = ImageIO.read(new File("ExitusImage.jpg"));
+		} catch (IOException e) {
+			System.err.println("Error loading images.");
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -82,9 +126,13 @@ public class Main {
 	 */
 	private void playGame() {
 
-		stateLocation(Location.PARKING_LOT);
+		showImage(startImage);
+		c.getChar();
+
+		 stateLocation(Location.OPERATING_ROOM);
 
 	}
+
 
 	private void stateLocation(Location location) {
 
@@ -137,7 +185,7 @@ public class Main {
 				if (!userHasMetSteven) {
 
 					showMessage(
-							"You are now turning right and walking slowly as you the noises of someone crying getting closer");
+							"You are now turning right and walking slowly as you hear noises of someone crying getting closer");
 					showMessage("And there is a wounded guy right in front of you.");
 
 					askQuestion("Do you want to save the guy, or rob him and take all his stuff?", "rob:save");
@@ -155,6 +203,8 @@ public class Main {
 							unlockedItems.add(Items.KEYS);
 
 							showMessage("You have taken keys and flashlight from this man and left him to die.");
+							showMessage("You then start walking straight slowly...");
+							stateLocation(Location.BASEMENT);
 
 							// if user has no backpack, send them to basement
 						} else {
@@ -192,7 +242,8 @@ public class Main {
 
 			// If the user has never been to the operating room
 			if (!userHasBeenTo(Location.OPERATING_ROOM)) {
-				showMessage("You wake up in an operating room. A bright white light emits from a lamp at the far right corner of the room.");
+				showMessage(
+						"You wake up in an operating room. A bright white light emits from a lamp at the far right corner of the room.");
 				locationHistory.add(Location.OPERATING_ROOM);
 			}
 
@@ -216,7 +267,8 @@ public class Main {
 				if (userInput.equals("body")) {
 					// Add item to the user inventory
 					unlockedItems.add(Items.BADGE);
-					showMessage("The body reeks of sweat and death, but after searching for 2 agonizing minutes you found a badge on the dead body.");
+					showMessage(
+							"The body reeks of sweat and death, but after searching for 2 agonizing minutes you found a badge on the dead body.");
 
 				} else if (userInput.equals("backpack")) {
 					unlockedItems.add(Items.BACKPACK);
@@ -243,7 +295,8 @@ public class Main {
 				askQuestion("You have found a backpack... Do you want to take it?", "yes:no");
 				if (userInput.equals("yes")) {
 					unlockedItems.add(Items.BACKPACK);
-					showMessage("You sling the backpack on to your back. A slight and subtle chill runs down your spine. You are unsure wether you feel safer or not.");
+					showMessage(
+							"You sling the backpack on to your back. A slight and subtle chill runs down your spine. You are unsure wether you feel safer or not.");
 				} else {
 					showMessage("Okay, no problem.");
 				}
@@ -274,12 +327,14 @@ public class Main {
 			} else {
 				// Since the user has no flashlight... ask if they want to turn
 				// switch on
-				showMessage("You feel something moving in the dark. You cannot see anything but you feel a light switch on the right side of the wall.");
+				showMessage(
+						"You feel something moving in the dark. You cannot see anything but you feel a light switch on the right side of the wall.");
 				askQuestion("Do you want to turn the switch on?", "yes:no");
 
 				// User dies after turning on the light
 				if (userInput.equals("yes")) {
-					showMessage("You feel massive amounts of electricity surging through your body. The loose wiring in the light switch got you electrocuted. You are killed.");
+					showMessage(
+							"You feel massive amounts of electricity surging through your body. The loose wiring in the light switch got you electrocuted. You are killed.");
 					userHasDied();
 					break;
 				}
@@ -317,7 +372,8 @@ public class Main {
 			// Eat food?
 			if (userInput.equals("yes")) {
 				showMessage("Yum... It seems pretty tasty...");
-				showMessage("After finishing the meal, you sit up from the table. You're tounge sits uncomfortably in your mouth, an unpleasant taste is lingering there. You collapse to the floor.");
+				showMessage(
+						"After finishing the meal, you sit up from the table. You're tounge sits uncomfortably in your mouth, an unpleasant taste is lingering there. You collapse to the floor.");
 				showMessage("The food was laced with rat poison. You died");
 				userHasDied();
 				break;
@@ -386,7 +442,8 @@ public class Main {
 						int parkingLotDoorPin = generateRandomNumberBetween(100, 999);
 
 						// Validate the pin
-						boolean doorPinCorrect = validatePin(parkingLotDoorPin, 3, "A buzzer buzzes twice. The pin you entered is wrong.");
+						boolean doorPinCorrect = validatePin(parkingLotDoorPin, 3,
+								"A buzzer buzzes twice. The pin you entered is wrong.");
 
 						// If the user guessed the pin correctly
 						if (doorPinCorrect) {
@@ -462,29 +519,31 @@ public class Main {
 
 					showMessage("You start driving in full speed.");
 					showMessage("As you get closer to the gate, you get nervous.");
-					
+
 					// generate a random number
-					
+
 					int randomNumber = generateRandomNumberBetween(0, 100);
 					System.out.println(randomNumber);
 					System.out.println(userVehicle.getSuccessRate());
-					
-					// randomly check if the random number is less than the success rate.
-					// the higher the success rate of vehicle, the more chances it will have of going through
+
+					// randomly check if the random number is less than the
+					// success rate.
+					// the higher the success rate of vehicle, the more chances
+					// it will have of going through
 					if (userVehicle.getSuccessRate() >= randomNumber) {
 						// user can break through
-					
+
 						showMessage("The front of the car slams the gate, breaking it open.");
 						userHasEscaped();
 						break;
-				
+
 					} else {
-						//user cannot break through
+						// user cannot break through
 						showMessage("Your vehicle slams the door at a high speed, killing you.");
 						userHasDied();
 						break;
 					}
-					
+
 					// if user wants to guess pin
 				} else {
 
@@ -519,13 +578,71 @@ public class Main {
 
 	}
 
-	/**
-	 * Show user a message. Instead of
-	 * 
-	 * @param message
-	 */
 	private void showMessage(String message) {
-		System.out.println(message);
+		animateString(message, 25, 1000, false);
+	}
+
+	private void showMessage(String message, boolean sameLine) {
+		animateString(message, 25, 1000, sameLine);
+	}
+
+	private void printToConsole(String message) {
+		c.println(message);
+	}
+
+	private void printToConsole(char character, boolean sameLine) {
+		if (sameLine) {
+			c.print(character);
+		} else {
+			c.println(character);
+		}
+	}
+
+	/**
+	 * Animate string so it prints character by character
+	 * 
+	 * @param text
+	 * @param speed
+	 * @param pauseTimer
+	 */
+	private void animateString(String text, int speed, int pauseTimer, boolean sameLine) {
+
+		try {
+
+			for (int i = 0; i < text.length(); i++) {
+				Thread.sleep(speed);
+
+				printToConsole(text.charAt(i), true);
+
+				// if text has a period and text after it, it probably means
+				// that there
+				// are more than one sentences in the text
+				// Pause for a moment after the period before showing another
+				// sentence
+				if ((text.charAt(i) == '.' || text.charAt(i) == '!')) {
+					// this if statement ensures that we don't get an
+					// ArrayOutOfBounds exception
+					if (text.length() != i + 1 && text.charAt(i + 1) == ' ') {
+						Thread.sleep(500);
+					}
+				}
+			}
+
+			if (!sameLine) {
+				// Print a new line after
+				printToConsole("");
+			}
+
+			if (pauseTimer > 0) {
+				Thread.sleep(pauseTimer);
+			} else {
+				Thread.sleep(1000);
+			}
+
+		} catch (InterruptedException ie) {
+			// if something goes wrong just print it normally
+			printToConsole(text);
+		}
 	}
 
 	/**
@@ -557,20 +674,38 @@ public class Main {
 	 * @return user's input
 	 */
 	private String askQuestion(String question, String acceptedAnswers) {
+
+		printToConsole("");
+
 		String input;
+		String parsedAcceptedAnswers = " ( " + acceptedAnswers.replaceAll(":", " / ") + " ) ";
 		while (true) {
-			System.out.println(question + " ( " + acceptedAnswers.replaceAll(":", " / ") + " )");
+
+			animateString(question, 30, 0, true);
+
+			c.setTextColor(Color.red);
+
+			animateString(parsedAcceptedAnswers, 20, 0, true);
+
+			c.setTextColor(Color.green);
+
 			// Convert user input to lower case so it's easier to parse
-			input = scan.nextLine().toLowerCase();
+			input = c.readLine().toLowerCase();
+
+			c.setTextColor(Color.white);
+
 			// Validate user's input
 			String message = validateInput(input, acceptedAnswers);
 			if (message.equals("")) {
 				break;
 			}
-			System.out.println(message);
+			animateString(message, 20, 0, false);
 		}
+
+		showMessage(" ");
 		// Set the current user input to the input
 		this.userInput = input;
+		c.clear();
 		return input;
 	}
 
@@ -592,7 +727,7 @@ public class Main {
 		// it to a List first
 		List<String> acceptedList = Arrays.asList(acceptedInputArray);
 		if (!acceptedList.contains(userInput)) {
-			message = "Opps! You must either type \"" + acceptedInput.replace(":", "\" or \"")
+			message = "Oops! You must either type \"" + acceptedInput.replace(":", "\" or \"")
 					+ "\". Please try again.";
 		}
 
@@ -604,9 +739,7 @@ public class Main {
 	 * end number
 	 * 
 	 * @param start
-	 *            Start range
 	 * @param end
-	 *            End range
 	 * @return
 	 */
 	private int generateRandomNumberBetween(int start, int end) {
@@ -623,11 +756,13 @@ public class Main {
 	 * @return
 	 */
 	private boolean validatePin(int pin, int maxTries, String errorMessage) {
-		System.out.println(pin);
+		if (DEBUG_MODE) {
+			showMessage("PIN: " + pin);
+		}
 		int totalTries = 0;
 		// If user has not yet reached his max try limit
 		while (totalTries < maxTries) {
-			int userInputPin = scan.nextInt();
+			int userInputPin = c.readInt();
 			// If user has entered the right pin, we simply return
 			if (userInputPin == pin) {
 				return true;
@@ -705,4 +840,11 @@ public class Main {
 	private Location lastLocation() {
 		return locationHistory.get(locationHistory.size() - 1);
 	}
+
+	private void showImage(BufferedImage image) {
+		c.setTextBackgroundColour(Color.BLACK);
+		c.setTextColor(Color.WHITE);
+		c.drawImage(image, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT, null);
+	}
+
 }
