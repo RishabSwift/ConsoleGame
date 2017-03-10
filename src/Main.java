@@ -107,14 +107,14 @@ public class Main {
 	private void loadImages() {
 
 		try {
-			basementImage = ImageIO.read(new File("CreepyBasement.jpg"));
-			cafeteriaImage = ImageIO.read(new File("CreepyCafeteria.jpg"));
-			hallwayImage = ImageIO.read(new File("CreepyHallway.jpg"));
-			operatingRoomImage = ImageIO.read(new File("CreepyOperatingRoom.jpg"));
-			parkingLotImage = ImageIO.read(new File("CreepyParkingLot.png"));
-			roadImage = ImageIO.read(new File("CreepyRoad.jpg"));
+			basementImage = ImageIO.read(new File("images/CreepyBasement.jpg"));
+			cafeteriaImage = ImageIO.read(new File("images/CreepyCafeteria.jpg"));
+			hallwayImage = ImageIO.read(new File("images/CreepyHallway.jpg"));
+			operatingRoomImage = ImageIO.read(new File("images/CreepyOperatingRoom.jpg"));
+			parkingLotImage = ImageIO.read(new File("images/CreepyParkingLot.png"));
+			roadImage = ImageIO.read(new File("images/CreepyRoad.jpg"));
 
-			startImage = ImageIO.read(new File("ExitusImage.jpg"));
+			startImage = ImageIO.read(new File("images/ExitusImage.jpg"));
 		} catch (IOException e) {
 			System.err.println("Error loading images.");
 			e.printStackTrace();
