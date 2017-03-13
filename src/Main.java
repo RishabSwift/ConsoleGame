@@ -5,20 +5,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 
 import hsa_new.Console;
 
 public class Main {
 
 	// If debug mode, show debug messages such as randomly generated number, etc
-	public static final boolean DEBUG_MODE = true;
-
-	private Scanner scan = new Scanner(System.in);
+	public static final boolean DEBUG_MODE = false;
 
 	// All different locations in the game
 	enum Location {
@@ -81,12 +78,40 @@ public class Main {
 	private Console c = new Console(40, 150, "Exitus");
 
 	private BufferedImage basementImage = null;
+	private BufferedImage basementWithFlashlightImage = null;
+
+	// ALL IMAGES IN THE GAME
+
 	private BufferedImage cafeteriaImage = null;
+	private BufferedImage cafeteriaBlurryImage = null;
+	private BufferedImage cafeteriaSecondImage = null;
+	private BufferedImage cafeteriaFoodImage = null;
+	private BufferedImage cafeteriaExitDoorImage = null;
+	private BufferedImage cafeteriaParkingLotDoor = null;
+
 	private BufferedImage hallwayImage = null;
 	private BufferedImage operatingRoomImage = null;
+
 	private BufferedImage parkingLotImage = null;
-	private BufferedImage roadImage = null;
+	private BufferedImage parkingLotCarsImage = null;
+	private BufferedImage parkingLotMercedesImage = null;
+	private BufferedImage parkingLotTruckImage = null;
+	private BufferedImage parkingLotSchoolBusImage = null;
+	private BufferedImage parkingLotGateImage = null;
+	private BufferedImage parkingLotRoadImage = null;
+
 	private BufferedImage startImage = null;
+
+	private BufferedImage leftHallwayImage = null;
+	private BufferedImage rightHallwayImage = null;
+	private BufferedImage stevenHallwayImage = null;
+
+	private BufferedImage currentBackgroundImage;
+
+	// ALL AUDIO IN THE GAME
+	Clip keyboard1Audio, keyboard2Audio, backgroundMusic, carDrivingAwayAudio, carCrashAudio, operatingRoomAudio,
+			carEngineStartAudio, doorOpeningAudio, eatingFoodAudio, footstepsAudio, buzzAudio, doorSqueak1Audio,
+			doorSqueak2Audio, doorShutAudio, footstepsRunAudio, lightSwitchAudio, electricalNoiseAudio;
 
 	/**
 	 * The main method
@@ -96,9 +121,69 @@ public class Main {
 	public static void main(String[] args) {
 
 		Main consoleGame = new Main();
-		consoleGame.resetGame();
 		consoleGame.loadImages();
+		consoleGame.loadAudio();
+		consoleGame.resetGame();
 		consoleGame.playGame();
+	}
+
+	private void loadAudio() {
+		try {
+
+			keyboard1Audio = AudioSystem.getClip();
+			keyboard1Audio.open(AudioSystem.getAudioInputStream(new File("audio/typing-keypress-1.wav")));
+
+			keyboard2Audio = AudioSystem.getClip();
+			keyboard2Audio.open(AudioSystem.getAudioInputStream(new File("audio/typing-keypress-2.wav")));
+
+			backgroundMusic = AudioSystem.getClip();
+			backgroundMusic.open(AudioSystem.getAudioInputStream(new File("audio/background-music.wav")));
+
+			carDrivingAwayAudio = AudioSystem.getClip();
+			carDrivingAwayAudio.open(AudioSystem.getAudioInputStream(new File("audio/car-driving-away.wav")));
+
+			carCrashAudio = AudioSystem.getClip();
+			carCrashAudio.open(AudioSystem.getAudioInputStream(new File("audio/car-crash.wav")));
+
+			operatingRoomAudio = AudioSystem.getClip();
+			operatingRoomAudio.open(AudioSystem.getAudioInputStream(new File("audio/operating-room.wav")));
+
+			carEngineStartAudio = AudioSystem.getClip();
+			carEngineStartAudio.open(AudioSystem.getAudioInputStream(new File("audio/car-engine-start.wav")));
+
+			doorOpeningAudio = AudioSystem.getClip();
+			doorOpeningAudio.open(AudioSystem.getAudioInputStream(new File("audio/door-opening.wav")));
+
+			eatingFoodAudio = AudioSystem.getClip();
+			eatingFoodAudio.open(AudioSystem.getAudioInputStream(new File("audio/eating-food.wav")));
+
+			footstepsAudio = AudioSystem.getClip();
+			footstepsAudio.open(AudioSystem.getAudioInputStream(new File("audio/footsteps.wav")));
+
+			buzzAudio = AudioSystem.getClip();
+			buzzAudio.open(AudioSystem.getAudioInputStream(new File("audio/buzz.wav")));
+
+			doorSqueak1Audio = AudioSystem.getClip();
+			doorSqueak1Audio.open(AudioSystem.getAudioInputStream(new File("audio/door-squeak-1.wav")));
+
+			doorSqueak2Audio = AudioSystem.getClip();
+			doorSqueak2Audio.open(AudioSystem.getAudioInputStream(new File("audio/door-squeak-2.wav")));
+
+			doorShutAudio = AudioSystem.getClip();
+			doorShutAudio.open(AudioSystem.getAudioInputStream(new File("audio/door-shut.wav")));
+
+			footstepsRunAudio = AudioSystem.getClip();
+			footstepsRunAudio.open(AudioSystem.getAudioInputStream(new File("audio/footsteps-run.wav")));
+
+			lightSwitchAudio = AudioSystem.getClip();
+			lightSwitchAudio.open(AudioSystem.getAudioInputStream(new File("audio/light-switch.wav")));
+
+			electricalNoiseAudio = AudioSystem.getClip();
+			electricalNoiseAudio.open(AudioSystem.getAudioInputStream(new File("audio/electrical-noise.wav")));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -107,14 +192,33 @@ public class Main {
 	private void loadImages() {
 
 		try {
-			basementImage = ImageIO.read(new File("images/CreepyBasement.jpg"));
-			cafeteriaImage = ImageIO.read(new File("images/CreepyCafeteria.jpg"));
-			hallwayImage = ImageIO.read(new File("images/CreepyHallway.jpg"));
-			operatingRoomImage = ImageIO.read(new File("images/CreepyOperatingRoom.jpg"));
-			parkingLotImage = ImageIO.read(new File("images/CreepyParkingLot.png"));
-			roadImage = ImageIO.read(new File("images/CreepyRoad.jpg"));
+			basementImage = ImageIO.read(new File("images/basement.jpg"));
+			basementWithFlashlightImage = ImageIO.read(new File("images/basement-with-flashlight.jpg"));
 
-			startImage = ImageIO.read(new File("images/ExitusImage.jpg"));
+			cafeteriaImage = ImageIO.read(new File("images/cafeteria.jpg"));
+			cafeteriaBlurryImage = ImageIO.read(new File("images/cafeteria-blurry.jpg"));
+			cafeteriaSecondImage = ImageIO.read(new File("images/cafeteria-second.jpg"));
+			cafeteriaFoodImage = ImageIO.read(new File("images/cafeteria-food.jpg"));
+			cafeteriaExitDoorImage = ImageIO.read(new File("images/cafeteria-exit-door.jpg"));
+			cafeteriaParkingLotDoor = ImageIO.read(new File("images/cafeteria-parking-lot-door.jpg"));
+
+			hallwayImage = ImageIO.read(new File("images/hallway.png"));
+			operatingRoomImage = ImageIO.read(new File("images/operatingroom.jpg"));
+
+			parkingLotImage = ImageIO.read(new File("images/parkinglot.jpg"));
+			parkingLotCarsImage = ImageIO.read(new File("images/parkinglot-cars.jpg"));
+			parkingLotMercedesImage = ImageIO.read(new File("images/parkinglot-mercedes.jpg"));
+			parkingLotTruckImage = ImageIO.read(new File("images/parkinglot-truck.jpg"));
+			parkingLotSchoolBusImage = ImageIO.read(new File("images/parkinglot-school-bus.jpg"));
+			parkingLotRoadImage = ImageIO.read(new File("images/parkinglot-road.jpg"));
+			parkingLotGateImage = ImageIO.read(new File("images/parkinglot-gate.jpg"));
+
+			startImage = ImageIO.read(new File("images/start.jpg"));
+			leftHallwayImage = ImageIO.read(new File("images/hallway-left.jpg"));
+			rightHallwayImage = ImageIO.read(new File("images/hallway-right.jpg"));
+
+			stevenHallwayImage = ImageIO.read(new File("images/hallway-steven.jpg"));
+
 		} catch (IOException e) {
 			System.err.println("Error loading images.");
 			e.printStackTrace();
@@ -126,13 +230,15 @@ public class Main {
 	 */
 	private void playGame() {
 
-		showImage(startImage);
+		showBackgroundImage(startImage);
+		
+		backgroundMusic.loop(Clip.LOOP_CONTINUOUSLY);
+
 		c.getChar();
 
-		 stateLocation(Location.OPERATING_ROOM);
+		stateLocation(Location.OPERATING_ROOM);
 
 	}
-
 
 	private void stateLocation(Location location) {
 
@@ -141,6 +247,8 @@ public class Main {
 
 		switch (location) {
 		case HALLWAY:
+
+			showBackgroundImage(hallwayImage);
 
 			// If the user has never been to a hallway, show them the message
 			if (!userHasBeenTo(Location.HALLWAY)) {
@@ -157,19 +265,32 @@ public class Main {
 				// If user wants to go left...
 				if (userInput.equals("left")) {
 
+					showBackgroundImage(leftHallwayImage);
+
 					showMessage("You see a dark door in front of you.");
 
 					// Firstly, lets check if the user has keys (in the
 					// backpack) to go to the cafeteria
 					if (userHas(Items.KEYS)) {
+						playAudio(doorSqueak1Audio);
 						showMessage("The door is locked... so you unlock the door with the keys in your backpack.");
 						unlockedPlaces.add(Location.CAFETERIA);
 						stateLocation(Location.CAFETERIA);
 						break;
 					} else {
+
+						showBackgroundImage(leftHallwayImage);
+
+						playAudio(footstepsAudio);
 						// Nope, they don't have the keys...
 						showMessage("It seems to be locked. You are now on your way back.");
+
 						showMessage("There you are... right outside of the operaing room again...");
+
+						footstepsAudio.stop();
+						
+						
+						showBackgroundImage(hallwayImage);
 					}
 
 				} else {
@@ -181,12 +302,20 @@ public class Main {
 			// If they want to go right
 			if (userInput.equals("right")) {
 
+				showBackgroundImage(rightHallwayImage);
+				
+				playAudio(footstepsAudio);
+
 				// If user has not met the guy before...
 				if (!userHasMetSteven) {
 
 					showMessage(
 							"You are now turning right and walking slowly as you hear noises of someone crying getting closer");
 					showMessage("And there is a wounded guy right in front of you.");
+
+					footstepsAudio.stop();
+					
+					showBackgroundImage(stevenHallwayImage);
 
 					askQuestion("Do you want to save the guy, or rob him and take all his stuff?", "rob:save");
 
@@ -227,7 +356,12 @@ public class Main {
 
 					// User has met the guy before already
 				} else {
+					
+					footstepsAudio.stop();
 					showMessage("There is a dark, old door in front of you.");
+					
+					playAudio(doorSqueak2Audio);
+					
 					showMessage("You open it slowly, after a shrilling creak you go through it...");
 
 					// update user location to the basement
@@ -239,6 +373,9 @@ public class Main {
 			break;
 
 		case OPERATING_ROOM:
+
+			showBackgroundImage(operatingRoomImage);
+			operatingRoomAudio.loop(Clip.LOOP_CONTINUOUSLY);
 
 			// If the user has never been to the operating room
 			if (!userHasBeenTo(Location.OPERATING_ROOM)) {
@@ -267,8 +404,9 @@ public class Main {
 				if (userInput.equals("body")) {
 					// Add item to the user inventory
 					unlockedItems.add(Items.BADGE);
+
 					showMessage(
-							"The body reeks of sweat and death, but after searching for 2 agonizing minutes you found a badge on the dead body.");
+							"The body reeks of sweat and death, but after searching for 2 agonizing minutes you find a badge on the dead body.");
 
 				} else if (userInput.equals("backpack")) {
 					unlockedItems.add(Items.BACKPACK);
@@ -282,8 +420,11 @@ public class Main {
 
 				askQuestion("You seem to find a badge on a dead body. Do you want to carry the badge with you?",
 						"yes:no");
+
 				if (userInput.equals("yes")) {
+
 					unlockedItems.add(Items.BADGE);
+
 					showMessage("You now have a badge in your backpack.");
 				} else {
 					showMessage("Okay, no problem.");
@@ -294,6 +435,7 @@ public class Main {
 			} else if (userHas(Items.BADGE) && !userHas(Items.BACKPACK)) {
 				askQuestion("You have found a backpack... Do you want to take it?", "yes:no");
 				if (userInput.equals("yes")) {
+
 					unlockedItems.add(Items.BACKPACK);
 					showMessage(
 							"You sling the backpack on to your back. A slight and subtle chill runs down your spine. You are unsure wether you feel safer or not.");
@@ -309,8 +451,16 @@ public class Main {
 			if (userHasMetSteven) {
 				showMessage("You now slowly make your way outside the hallway...");
 			} else {
+				
+				operatingRoomAudio.stop();
+				playAudio(footstepsRunAudio);
+				
 				showMessage("You hear a noise and run outside.");
+				
+				footstepsRunAudio.stop();
 			}
+
+			operatingRoomAudio.stop();
 
 			// Update user's location to the hallway
 			stateLocation(Location.HALLWAY);
@@ -319,11 +469,18 @@ public class Main {
 
 		case BASEMENT:
 
+			showBackgroundImage(basementImage);
+
 			showMessage("The basement is a dark and cold place.");
 
 			// If the user has a flashlight, turn it on
 			if (userHas(Items.FLASHLIGHT)) {
+
+				showBackgroundImage(basementWithFlashlightImage);
+
+				playAudio(lightSwitchAudio);
 				showMessage("Luckily, you have a flashlight in your backpack so you use it.");
+
 			} else {
 				// Since the user has no flashlight... ask if they want to turn
 				// switch on
@@ -333,23 +490,31 @@ public class Main {
 
 				// User dies after turning on the light
 				if (userInput.equals("yes")) {
+					playAudio(lightSwitchAudio);
+					playAudio(electricalNoiseAudio);
 					showMessage(
-							"You feel massive amounts of electricity surging through your body. The loose wiring in the light switch got you electrocuted. You are killed.");
+							"You feel massive amounts of electricity surging through your body. The loose wiring in the light switch got you electrocuted.");
+					showMessage(" You are killed.");
 					userHasDied();
 					break;
 				}
 			}
 
 			showMessage(
-					"There does not seem to be anything in the basement. You want to get out and you see 2 sets of doors. The first set of doors was painted a dull gray fashioned with a cold, pair of steel handles, while the second has a dried red liquid splattered across.");
-			askQuestion("Do you want to go through from the first or the second doors?", "door 1:door 2");
+					"There does not seem to be anything in the basement. You want to get out and you see 2 sets of doors.");
+			showMessage(
+					"The first set of doors was painted a dull gray fashioned with a cold, pair of steel handles...");
+			showMessage("The second door has a dried red liquid splattered across.");
+			askQuestion("Do you want to go through from the first or the second door?", "first:second");
 
 			// Door 1 leads to the cafeteria
-			if (userInput.equals("door 1")) {
+			if (userInput.equals("first")) {
+				playAudio(doorSqueak1Audio);
 				locationHistory.add(Location.CAFETERIA);
-
+				stateLocation(Location.CAFETERIA);
 				// Door 2 leads to the parking lot
 			} else {
+				playAudio(doorSqueak2Audio);
 				locationHistory.add(Location.PARKING_LOT);
 				stateLocation(Location.PARKING_LOT);
 			}
@@ -358,22 +523,40 @@ public class Main {
 
 		case CAFETERIA:
 
+			showBackgroundImage(cafeteriaImage);
+
 			// If the last location is basement, show them another message
 			if (lastLocation() == Location.BASEMENT) {
 				showMessage("You thought it was an exit, but it seems to be an entrance to the cafeteria.");
+
+				playAudio(doorShutAudio);
 				showMessage("Before you could go back, the doors behind you are locked.");
 			}
 			showMessage("You find yourself in a vast room. You see rows of tables stretching form wall to wall.");
 			showMessage("You smell food somewhere, your stomach grumbles in response.");
+
+			showBackgroundImage(cafeteriaFoodImage);
+
 			showMessage("You go towards the scent and you notice a warm and inviting plate of dinner.");
 
 			askQuestion("Do you eat the food?", "yes:no");
 
 			// Eat food?
 			if (userInput.equals("yes")) {
+
+				playAudio(eatingFoodAudio);
+
 				showMessage("Yum... It seems pretty tasty...");
+
+				showBackgroundImage(cafeteriaImage);
+
 				showMessage(
-						"After finishing the meal, you sit up from the table. You're tounge sits uncomfortably in your mouth, an unpleasant taste is lingering there. You collapse to the floor.");
+						"After finishing the meal, you sit up from the table. You're tounge sits uncomfortably in your mouth, an unpleasant taste is lingering there.");
+
+				showBackgroundImage(cafeteriaBlurryImage);
+
+				showMessage("The whole world seems dizzy to you.");
+
 				showMessage("The food was laced with rat poison. You died");
 				userHasDied();
 				break;
@@ -381,6 +564,8 @@ public class Main {
 			} else if (userInput.equals("no")) {
 				showMessage("You leave the food on the table. You continue exploring.");
 			}
+
+			showBackgroundImage(cafeteriaSecondImage);
 
 			// Take the phone?
 			showMessage("You notice a phone on the floor, it has a bright red LED on the front of the phone.");
@@ -401,7 +586,9 @@ public class Main {
 				showMessage("You leave the phone on the ground and you continue exploring the cafeteria.");
 			}
 
-			showMessage("You come across a stairway and a white double door set with paint peeling off.");
+			showBackgroundImage(cafeteriaExitDoorImage);
+
+			showMessage("You come across a stairway and a white door set with paint peeling off.");
 			showMessage("The stairway is labelled: BASEMENT and the door is labelled: EXIT");
 
 			// parking lot or basement?
@@ -409,17 +596,29 @@ public class Main {
 
 			if (userInput.equals("basement")) {
 
+				playAudio(footstepsAudio);
+
 				if (lastLocation() == Location.BASEMENT) {
 					showMessage("You are now on your way back to the basement...");
 				}
+				
+				footstepsAudio.stop();
 				stateLocation(Location.BASEMENT);
 				break;
 
 			} else if (userInput.equals("exit")) {
 
+				playAudio(doorOpeningAudio);
+
+				showBackgroundImage(cafeteriaParkingLotDoor);
+
 				if (hasSteven == true) {
 					showMessage(
-							"You try to open the door but it is locked. You notice that there is a number pad to the left of the door. Luckily, Steven reassures you that he knows the code, he goes towards the number pad and enters the pin.");
+							"You try to open the door but it is locked. You notice that there is a number pad to the left of the door.");
+
+					playAudio(doorOpeningAudio);
+					showMessage(
+							"Luckily, Steven reassures you that he knows the code, he goes towards the number pad and enters the pin.");
 					showMessage("The door clicks. You push it open and a gust of cold wind greets you. ");
 					unlockedPlaces.add(Location.PARKING_LOT);
 					stateLocation(Location.PARKING_LOT);
@@ -429,8 +628,9 @@ public class Main {
 				// If the user doesn't have Steven, they have to guess the code
 				else {
 					showMessage(
-							"You try to open the door but it is locked. You notice that there is a number pad to the left of the door. The 3 spaces displayed on the top of the number pad suggests that there is a 3 number pin.");
-
+							"You try to open the door but it is locked. You notice that there is a number pad to the left of the door. ");
+					showMessage(
+							"The 3 spaces displayed on the top of the number pad suggests that there is a 3 number pin.");
 					// If the cafeteria doors to the parking lot are permanently
 					// locked
 					if (caffParkingLotDoorsPermanentlyLocked) {
@@ -447,6 +647,7 @@ public class Main {
 
 						// If the user guessed the pin correctly
 						if (doorPinCorrect) {
+
 							showMessage(
 									"You guessed the pin correctly! The door clicks. You push it open and a gust of cold wind greets you.");
 							unlockedPlaces.add(Location.PARKING_LOT);
@@ -464,6 +665,11 @@ public class Main {
 
 				// Since the user can not exit the cafeteria upon guessing the
 				// code incorrectly, they must now go to the basement.
+
+				showBackgroundImage(cafeteriaExitDoorImage);
+
+				playAudio(doorOpeningAudio);
+
 				showMessage("You have no option so you take the door to the basement.");
 				locationHistory.add(Location.BASEMENT);
 				stateLocation(Location.BASEMENT);
@@ -475,10 +681,15 @@ public class Main {
 
 		case PARKING_LOT:
 
-			showMessage("It's pretty dark out here. You see cars. It seems to be a parking lot.");
+			showBackgroundImage(parkingLotImage);
+
+			showMessage("It's pretty dark out here. It seems to be a parking lot. An empty parking lot.");
 
 			// Show message saying user has an interest in cars
-			showMessage(hasSteven ? "Steven seems" : "You seem" + " to have an interest in cars so you look around.");
+			showMessage(hasSteven ? "Steven seems to love cars so you look around to find cars together."
+					: "You seem to have an interest in cars so you look around to find cars.");
+
+			showBackgroundImage(parkingLotCarsImage);
 
 			showMessage("You see a truck, Mercedes Benz and a school bus.");
 			askQuestion("Which one do you want?", "truck:mercedes:school bus");
@@ -488,21 +699,33 @@ public class Main {
 			// set the vehicle text as whatever vehicle they chose
 			if (userInput.equals("truck")) {
 
+				showBackgroundImage(parkingLotTruckImage);
+
 				userVehicle = Vehicles.TRUCK;
 				vehicleInfo = "old, rusty, big truck.";
 
 			} else if (userInput.equals("mercedes")) {
 
+				showBackgroundImage(parkingLotMercedesImage);
+
 				userVehicle = Vehicles.MERCEDES_BENZ;
 				vehicleInfo = "Mercedes Benz S Class 2017 Model.";
 
 			} else {
+
+				showBackgroundImage(parkingLotSchoolBusImage);
+
 				userVehicle = Vehicles.SCHOOL_BUS;
 				vehicleInfo = "School bus.";
 			}
 
 			showMessage("Okay, you now have a " + vehicleInfo);
+
+			playAudio(carEngineStartAudio);
+
 			showMessage("You start driving away to escape. But you see that the door is locked with a key");
+
+			showBackgroundImage(parkingLotGateImage);
 
 			// If user picked up Steven, they can escape without any problem
 			if (hasSteven) {
@@ -510,39 +733,16 @@ public class Main {
 				userHasEscaped();
 			} else {
 
-				askQuestion(
-						"Since you don't know the pin, you can either break through the gate by driving or try guessing the pin. Which one do you want?",
-						"guess:drive through");
+				showMessage(
+						"Since you don't know the pin, you can either break through the gate by driving or try guessing the pin.");
+				askQuestion("Which one do you want?", "guess:drive through");
+
+				// boolean driveThrough = userInput.equals("drive through");
 
 				// if user wants to drive through
 				if (userInput.equals("drive through")) {
 
-					showMessage("You start driving in full speed.");
-					showMessage("As you get closer to the gate, you get nervous.");
-
-					// generate a random number
-
-					int randomNumber = generateRandomNumberBetween(0, 100);
-					System.out.println(randomNumber);
-					System.out.println(userVehicle.getSuccessRate());
-
-					// randomly check if the random number is less than the
-					// success rate.
-					// the higher the success rate of vehicle, the more chances
-					// it will have of going through
-					if (userVehicle.getSuccessRate() >= randomNumber) {
-						// user can break through
-
-						showMessage("The front of the car slams the gate, breaking it open.");
-						userHasEscaped();
-						break;
-
-					} else {
-						// user cannot break through
-						showMessage("Your vehicle slams the door at a high speed, killing you.");
-						userHasDied();
-						break;
-					}
+					driveThrough();
 
 					// if user wants to guess pin
 				} else {
@@ -551,8 +751,13 @@ public class Main {
 							"You have to guess the pin to get out of the parking lot. You see a box where you enter the pin.");
 					showMessage("The pin is 3 numbers and you have 3 guesses before it permanently locks.");
 
+					// Clear old text by showing current background image which
+					// clears the text and everything
+					showBackgroundImage(currentBackgroundImage);
+
+					showMessage("Please enter a pin. Remember, you have 3 guesses.");
 					int guessedPin = generateRandomNumberBetween(100, 999);
-					boolean correctGuess = validatePin(guessedPin, 3, "That is not the right pin. Try again.");
+					boolean correctGuess = validatePin(guessedPin, 3, "That is not the right pin.");
 
 					// Check if the user guessed the right pin
 					if (correctGuess) {
@@ -566,6 +771,9 @@ public class Main {
 					} else {
 
 						showMessage("You have guessed too many times. You have no option but to drive through.");
+
+						driveThrough();
+
 					}
 
 				} // end: guess pin
@@ -578,13 +786,52 @@ public class Main {
 
 	}
 
+	/**
+	 * This method is called if the user wants to drive through the gate
+	 */
+	private void driveThrough() {
+
+		showBackgroundImage(parkingLotGateImage);
+
+		showMessage("You start driving in full speed.");
+		showMessage("As you get closer to the gate, you get nervous.");
+
+		// generate a random number
+
+		int randomNumber = generateRandomNumberBetween(0, 100);
+
+		// Debug stuff
+		if (DEBUG_MODE) {
+			System.out.println("Random number for vehicle success rate: " + randomNumber);
+			System.out.println("Vehicle success rate: " + userVehicle.getSuccessRate());
+		}
+
+		playAudio(carCrashAudio);
+
+		// randomly check if the random number is less than the
+		// success rate.
+		// the higher the success rate of vehicle, the more chances
+		// it will have of going through
+		if (userVehicle.getSuccessRate() >= randomNumber) {
+			// user can break through
+
+			showMessage("The front of the car slams the gate, breaking it open.");
+			userHasEscaped();
+
+		} else {
+			// user cannot break through
+			showMessage("Your vehicle slams the door at a high speed, killing you.");
+			userHasDied();
+		}
+	}
+
 	private void showMessage(String message) {
 		animateString(message, 25, 1000, false);
 	}
-
-	private void showMessage(String message, boolean sameLine) {
-		animateString(message, 25, 1000, sameLine);
-	}
+	//
+	// private void showMessage(String message, boolean sameLine) {
+	// animateString(message, 25, 1000, sameLine);
+	// }
 
 	private void printToConsole(String message) {
 		c.println(message);
@@ -607,12 +854,26 @@ public class Main {
 	 */
 	private void animateString(String text, int speed, int pauseTimer, boolean sameLine) {
 
+		if (DEBUG_MODE) {
+			speed = 0;
+		}
+
 		try {
 
 			for (int i = 0; i < text.length(); i++) {
+
+				// if (i % 2 == 0) {
+				// keyboard1.start();
+				// } else {
+				// keyboard2.start();
+				// }
+
 				Thread.sleep(speed);
 
 				printToConsole(text.charAt(i), true);
+
+				// keyboard1.setFramePosition(0);
+				// keyboard2.setFramePosition(0);
 
 				// if text has a period and text after it, it probably means
 				// that there
@@ -626,6 +887,7 @@ public class Main {
 						Thread.sleep(500);
 					}
 				}
+
 			}
 
 			if (!sameLine) {
@@ -638,6 +900,9 @@ public class Main {
 			} else {
 				Thread.sleep(1000);
 			}
+
+			// keyboard2.stop();
+			// keyboard1.stop();
 
 		} catch (InterruptedException ie) {
 			// if something goes wrong just print it normally
@@ -661,6 +926,26 @@ public class Main {
 		saveSteven = false;
 		userVehicle = null;
 
+		// Stop all audio
+		carDrivingAwayAudio.stop();
+		backgroundMusic.stop();
+		keyboard1Audio.stop();
+		keyboard2Audio.stop();
+		carDrivingAwayAudio.stop();
+		carCrashAudio.stop();
+		operatingRoomAudio.stop();
+		carEngineStartAudio.stop();
+		doorOpeningAudio.stop();
+		eatingFoodAudio.stop();
+		footstepsAudio.stop();
+		buzzAudio.stop();
+		doorSqueak1Audio.stop();
+		doorSqueak2Audio.stop();
+		doorShutAudio.stop();
+		footstepsRunAudio.stop();
+		lightSwitchAudio.stop();
+		electricalNoiseAudio.stop();
+
 	}
 
 	/**
@@ -681,11 +966,11 @@ public class Main {
 		String parsedAcceptedAnswers = " ( " + acceptedAnswers.replaceAll(":", " / ") + " ) ";
 		while (true) {
 
-			animateString(question, 30, 0, true);
+			animateString(question, 30, 100, true);
 
-			c.setTextColor(Color.red);
+			c.setTextColor(Color.blue);
 
-			animateString(parsedAcceptedAnswers, 20, 0, true);
+			animateString(parsedAcceptedAnswers, 20, 100, true);
 
 			c.setTextColor(Color.green);
 
@@ -702,10 +987,11 @@ public class Main {
 			animateString(message, 20, 0, false);
 		}
 
-		showMessage(" ");
 		// Set the current user input to the input
 		this.userInput = input;
-		c.clear();
+
+		showBackgroundImage(currentBackgroundImage);
+
 		return input;
 	}
 
@@ -757,7 +1043,7 @@ public class Main {
 	 */
 	private boolean validatePin(int pin, int maxTries, String errorMessage) {
 		if (DEBUG_MODE) {
-			showMessage("PIN: " + pin);
+			System.out.println("PIN: " + pin);
 		}
 		int totalTries = 0;
 		// If user has not yet reached his max try limit
@@ -767,8 +1053,13 @@ public class Main {
 			if (userInputPin == pin) {
 				return true;
 			} else {
+				playAudio(buzzAudio);
 				// If user has entered an incorrect pin, show error message
-				showMessage(errorMessage);
+				// If the user has less than 3 tries add a "try again" after the
+				// error message.
+				// If it's the last try, we don't add any try again messages
+				showMessage(totalTries < 2 ? errorMessage + " Try again." : errorMessage);
+
 			}
 			totalTries++;
 		}
@@ -801,9 +1092,9 @@ public class Main {
 	 * and ask if they want to start over.
 	 */
 	private void userHasDied() {
-		resetGame();
 		askQuestion("Do you want to start over?", "yes:no");
 		if (userInput.equals("yes")) {
+			resetGame();
 			playGame();
 		} else {
 			showMessage("Guess you will never be able to escape this building.");
@@ -815,13 +1106,15 @@ public class Main {
 	 */
 	private void userHasEscaped() {
 
+		playAudio(carDrivingAwayAudio);
+		showBackgroundImage(parkingLotRoadImage);
+
 		// Show them a message about user escaping
 		if (hasSteven) {
 			showMessage("You and Steven break free successfully.");
 		} else {
 			showMessage("You break free and drive as fast as you can to get away from this scary place.");
 		}
-
 		askQuestion("Since you have bravely escaped, do you want to try again?", "yes:nope");
 
 		if (userInput.equals("yes")) {
@@ -841,10 +1134,25 @@ public class Main {
 		return locationHistory.get(locationHistory.size() - 1);
 	}
 
-	private void showImage(BufferedImage image) {
+	private void showBackgroundImage(BufferedImage image) {
+		c.clear();
+
+		currentBackgroundImage = image;
+
 		c.setTextBackgroundColour(Color.BLACK);
 		c.setTextColor(Color.WHITE);
+		c.setBackground(Color.BLACK);
 		c.drawImage(image, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT, null);
+	}
+
+	/**
+	 * Play audio by first setting the frame to 0
+	 * 
+	 * @param audio
+	 */
+	private void playAudio(Clip audio) {
+		audio.setFramePosition(0);
+		audio.start();
 	}
 
 }
