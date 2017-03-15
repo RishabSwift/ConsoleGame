@@ -231,7 +231,7 @@ public class Main {
 	private void playGame() {
 
 		showBackgroundImage(startImage);
-		
+
 		backgroundMusic.loop(Clip.LOOP_CONTINUOUSLY);
 
 		c.getChar();
@@ -288,8 +288,7 @@ public class Main {
 						showMessage("There you are... right outside of the operaing room again...");
 
 						footstepsAudio.stop();
-						
-						
+
 						showBackgroundImage(hallwayImage);
 					}
 
@@ -303,7 +302,7 @@ public class Main {
 			if (userInput.equals("right")) {
 
 				showBackgroundImage(rightHallwayImage);
-				
+
 				playAudio(footstepsAudio);
 
 				// If user has not met the guy before...
@@ -313,8 +312,9 @@ public class Main {
 							"You are now turning right and walking slowly as you hear noises of someone crying getting closer");
 					showMessage("And there is a wounded guy right in front of you.");
 
+					pauseGame(2);
 					footstepsAudio.stop();
-					
+
 					showBackgroundImage(stevenHallwayImage);
 
 					askQuestion("Do you want to save the guy, or rob him and take all his stuff?", "rob:save");
@@ -356,12 +356,12 @@ public class Main {
 
 					// User has met the guy before already
 				} else {
-					
+
 					footstepsAudio.stop();
 					showMessage("There is a dark, old door in front of you.");
-					
+
 					playAudio(doorSqueak2Audio);
-					
+
 					showMessage("You open it slowly, after a shrilling creak you go through it...");
 
 					// update user location to the basement
@@ -451,12 +451,12 @@ public class Main {
 			if (userHasMetSteven) {
 				showMessage("You now slowly make your way outside the hallway...");
 			} else {
-				
+
 				operatingRoomAudio.stop();
 				playAudio(footstepsRunAudio);
-				
+
 				showMessage("You hear a noise and run outside.");
-				
+
 				footstepsRunAudio.stop();
 			}
 
@@ -535,6 +535,7 @@ public class Main {
 			showMessage("You find yourself in a vast room. You see rows of tables stretching form wall to wall.");
 			showMessage("You smell food somewhere, your stomach grumbles in response.");
 
+			pauseGame(2);
 			showBackgroundImage(cafeteriaFoodImage);
 
 			showMessage("You go towards the scent and you notice a warm and inviting plate of dinner.");
@@ -552,6 +553,8 @@ public class Main {
 
 				showMessage(
 						"After finishing the meal, you sit up from the table. You're tounge sits uncomfortably in your mouth, an unpleasant taste is lingering there.");
+
+				pauseGame(2);
 
 				showBackgroundImage(cafeteriaBlurryImage);
 
@@ -586,6 +589,8 @@ public class Main {
 				showMessage("You leave the phone on the ground and you continue exploring the cafeteria.");
 			}
 
+			pauseGame(1);
+
 			showBackgroundImage(cafeteriaExitDoorImage);
 
 			showMessage("You come across a stairway and a white door set with paint peeling off.");
@@ -601,7 +606,7 @@ public class Main {
 				if (lastLocation() == Location.BASEMENT) {
 					showMessage("You are now on your way back to the basement...");
 				}
-				
+
 				footstepsAudio.stop();
 				stateLocation(Location.BASEMENT);
 				break;
@@ -631,6 +636,8 @@ public class Main {
 							"You try to open the door but it is locked. You notice that there is a number pad to the left of the door. ");
 					showMessage(
 							"The 3 spaces displayed on the top of the number pad suggests that there is a 3 number pin.");
+
+					showMessage("Enter the pin...");
 					// If the cafeteria doors to the parking lot are permanently
 					// locked
 					if (caffParkingLotDoorsPermanentlyLocked) {
@@ -720,6 +727,21 @@ public class Main {
 			}
 
 			showMessage("Okay, you now have a " + vehicleInfo);
+
+			// If user has a cell phone it randomly explodes killing them
+			if (userHas(Items.PHONE)) {
+
+				int randomCellNumber = generateRandomNumberBetween(1, 100);
+				
+				// Only explode if the random number is even
+				if (randomCellNumber % 2 == 0) {
+					// Cell explodes, killing them
+					playAudio(electricalNoiseAudio);
+					showMessage("The cell phone you picked up receives random flow of electricity, electrocuting and killing you...");
+					userHasDied();
+					break;
+				}
+			}
 
 			playAudio(carEngineStartAudio);
 
@@ -826,7 +848,7 @@ public class Main {
 	}
 
 	private void showMessage(String message) {
-		animateString(message, 25, 1000, false);
+		animateString(message, 35, 1000, false);
 	}
 	//
 	// private void showMessage(String message, boolean sameLine) {
@@ -1048,9 +1070,12 @@ public class Main {
 		int totalTries = 0;
 		// If user has not yet reached his max try limit
 		while (totalTries < maxTries) {
-			int userInputPin = c.readInt();
+			// Get string because if it's a number and the user types a string
+			// it will throw an exception
+			String userInputPin = c.readString();
+
 			// If user has entered the right pin, we simply return
-			if (userInputPin == pin) {
+			if (userInputPin.equals(pin)) {
 				return true;
 			} else {
 				playAudio(buzzAudio);
@@ -1153,6 +1178,19 @@ public class Main {
 	private void playAudio(Clip audio) {
 		audio.setFramePosition(0);
 		audio.start();
+	}
+
+	/**
+	 * Pause game for a specified number of seconds
+	 * 
+	 * @param seconds
+	 */
+	private void pauseGame(int seconds) {
+		try {
+			Thread.sleep(seconds * 1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
