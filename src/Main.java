@@ -24,7 +24,7 @@ import hsa_new.Console;
 public class Main {
 
 	// If debug mode, show debug messages such as randomly generated number, etc
-	public static final boolean DEBUG_MODE = false;
+	public static final boolean DEBUG_MODE = true;
 
 	// All different locations in the game
 	enum Location {
@@ -239,7 +239,7 @@ public class Main {
 
 		c.getChar();
 
-		currentLocation = Location.OPERATING_ROOM;
+		currentLocation = Location.BASEMENT;
 		stateLocation();
 
 	}
@@ -542,6 +542,9 @@ public class Main {
 					// Door 2 leads to the parking lot
 				} else {
 
+					showMessage("The door is locked with a 3 digit pin. You have 3 tries.");
+					showMessage("Please enter the pin.");
+					
 					// Not so easy. They have to guess the pin.
 					int parkingLotDoorPin = generateRandomNumberBetween(100, 999);
 
