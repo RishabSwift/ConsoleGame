@@ -12,12 +12,11 @@ import javax.sound.sampled.Clip;
 
 import hsa_new.Console;
 
-
 /**
  * 
- * Main.java
- * This program is a console game. It is a state machine where a user can go to the original location from different locations.
- * March 01, 2017
+ * Main.java This program is a console game. It is a state machine where a user
+ * can go to the original location from different locations. March 01, 2017
+ * 
  * @author Rishab Bhatt, Ian Ayuso, Ainslie Forbes
  *
  */
@@ -94,7 +93,6 @@ public class Main {
 	private static final int IMAGE_WIDTH = 1200;
 
 	private Console c = new Console(40, 150, "Exitus");
-
 
 	// ALL IMAGES IN THE GAME
 	private BufferedImage cafeteriaImage, cafeteriaBlurryImage, cafeteriaSecondImage, cafeteriaFoodImage,
@@ -542,28 +540,43 @@ public class Main {
 					// Door 2 leads to the parking lot
 				} else {
 
-					showMessage("The door is locked with a 3 digit pin. The number is between 100 and 120.");
-					showMessage("You have 3 tries. Please enter the pin.");
+					showMessage("The door is locked with a 3 digit pin.");
+
+					// If user has badge, they can go through
+					if (userHas(Items.BADGE)) {
+						showMessage(
+								"However, you have the badge which can open the door. You tap the badge to exit the building.");
 					
-					// Not so easy. They have to guess the pin.
-					int parkingLotDoorPin = generateRandomNumberBetween(100, 120);
-
-					// Validate the pin
-					boolean doorPinCorrect = validatePin(parkingLotDoorPin, 3,
-							"A buzzer buzzes twice. The pin you entered is wrong.");
-
-					if (doorPinCorrect) {
 						playAudio(doorSqueak2Audio);
 						locationHistory.add(Location.PARKING_LOT);
 						currentLocation = Location.PARKING_LOT;
-
+						
 					} else {
 
-						showMessage("You guessed too many times, so you are forced to go through the first door.");
+						showMessage("The number is between 100 and 120.");
+						showMessage("You have 3 tries. Please enter the pin.");
 
-						locationHistory.add(Location.CAFETERIA);
-						currentLocation = Location.CAFETERIA;
-					}
+						// Not so easy. They have to guess the pin.
+						int parkingLotDoorPin = generateRandomNumberBetween(100, 120);
+
+						// Validate the pin
+						boolean doorPinCorrect = validatePin(parkingLotDoorPin, 3,
+								"A buzzer buzzes twice. The pin you entered is wrong.");
+
+						if (doorPinCorrect) {
+							playAudio(doorSqueak2Audio);
+							locationHistory.add(Location.PARKING_LOT);
+							currentLocation = Location.PARKING_LOT;
+
+						} else {
+
+							showMessage("You guessed too many times, so you are forced to go through the first door.");
+
+							locationHistory.add(Location.CAFETERIA);
+							currentLocation = Location.CAFETERIA;
+						}
+
+					} // end : user !has badge
 
 				} // end: user goes through the second door
 
@@ -597,7 +610,8 @@ public class Main {
 					showMessage("Yum... It seems pretty tasty...");
 					showBackgroundImage(cafeteriaImage);
 
-					showMessage("After finishing the meal, you sit up from the table. You're tonge sits uncomfortably in your mouth, an unpleasant taste is lingering there.");
+					showMessage(
+							"After finishing the meal, you sit up from the table. You're tounge sits uncomfortably in your mouth, an unpleasant taste is lingering there.");
 
 					pauseGame(1);
 
@@ -986,7 +1000,8 @@ public class Main {
 
 				// if text has a period and text after it, it probably means
 				// that there are more than one sentences in the text
-				// Pause for a moment after the period before showing another sentence
+				// Pause for a moment after the period before showing another
+				// sentence
 				if ((text.charAt(i) == '.' || text.charAt(i) == '!')) {
 					// this if statement ensures that we don't get an
 					// ArrayOutOfBounds exception
