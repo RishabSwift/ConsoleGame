@@ -15,7 +15,7 @@ import hsa_new.Console;
 public class Main {
 
 	// If debug mode, show debug messages such as randomly generated number, etc
-	public static final boolean DEBUG_MODE = true;
+	public static final boolean DEBUG_MODE = false;
 
 	// All different locations in the game
 	enum Location {
@@ -86,35 +86,19 @@ public class Main {
 
 	private Console c = new Console(40, 150, "Exitus");
 
-	private BufferedImage basementImage = null;
-	private BufferedImage basementWithFlashlightImage = null;
 
 	// ALL IMAGES IN THE GAME
-	private BufferedImage cafeteriaImage = null;
-	private BufferedImage cafeteriaBlurryImage = null;
-	private BufferedImage cafeteriaSecondImage = null;
-	private BufferedImage cafeteriaFoodImage = null;
-	private BufferedImage cafeteriaExitDoorImage = null;
-	private BufferedImage cafeteriaParkingLotDoor = null;
+	private BufferedImage cafeteriaImage, cafeteriaBlurryImage, cafeteriaSecondImage, cafeteriaFoodImage,
+			cafeteriaExitDoorImage, cafeteriaParkingLotDoor,
 
-	private BufferedImage hallwayImage = null;
-	private BufferedImage operatingRoomImage = null;
+			hallwayImage, operatingRoomImage, basementImage, basementWithFlashlightImage,
 
-	private BufferedImage parkingLotImage = null;
-	private BufferedImage parkingLotCarsImage = null;
-	private BufferedImage parkingLotMercedesImage = null;
-	private BufferedImage parkingLotTruckImage = null;
-	private BufferedImage parkingLotSchoolBusImage = null;
-	private BufferedImage parkingLotGateImage = null;
-	private BufferedImage parkingLotRoadImage = null;
+			parkingLotImage, parkingLotCarsImage, parkingLotMercedesImage, parkingLotTruckImage,
+			parkingLotSchoolBusImage, parkingLotGateImage, parkingLotRoadImage,
 
-	private BufferedImage startImage = null;
+			leftHallwayImage, rightHallwayImage, stevenHallwayImage,
 
-	private BufferedImage leftHallwayImage = null;
-	private BufferedImage rightHallwayImage = null;
-	private BufferedImage stevenHallwayImage = null;
-
-	private BufferedImage currentBackgroundImage;
+			currentBackgroundImage, startImage;
 
 	// ALL AUDIO IN THE GAME
 	Clip backgroundMusic, carDrivingAwayAudio, carCrashAudio, operatingRoomAudio, carEngineStartAudio, doorOpeningAudio,
@@ -696,7 +680,7 @@ public class Main {
 							showMessage(
 									"... However, you have already guessed too many times which caused the doors to be permanently locked.");
 						} else {
-							
+
 							// Generate a random number
 							int parkingLotDoorPin = generateRandomNumberBetween(100, 999);
 
@@ -1085,7 +1069,7 @@ public class Main {
 
 			animateString(question, 30, 100, true);
 
-			c.setTextColor(Color.blue);
+			c.setTextColor(Color.yellow);
 
 			animateString(parsedAcceptedAnswers, 20, 100, true);
 
@@ -1150,40 +1134,42 @@ public class Main {
 		return (int) (Math.random() * size) + start;
 	}
 
-//	/**
-//	 * Check if a number is a Palindrome
-//	 * 
-//	 * @param primeNumber
-//	 * @return
-//	 */
-//	private boolean isPalindrome(String primeNumber) {
-//		return primeNumber.equals(new StringBuilder(primeNumber).reverse().toString());
-//	}
-//
-//	/**
-//	 * Check if a number is a prime 
-//	 * @param number
-//	 * @return
-//	 */
-//	private boolean isPrime(int number) {
-//		// If number is 0 or 1, not a prime
-//		if (number == 0 || number == 1)
-//			return false;
-//		
-//		// If number is greater than 2 and it's divisible by 2, not a prime
-//		if (number > 2 && number % 2 == 0) {
-//			return false;
-//		}
-//		
-//		// the highest is the square root of the number + 1, so we can reduce the time by squarerooting the number
-//		int top = (int) Math.sqrt(number) + 1;
-//		for (int i = 3; i < top; i += 2) {
-//			if (number % i == 0) {
-//				return false;
-//			}
-//		}
-//		return true;
-//	}
+	// /**
+	// * Check if a number is a Palindrome
+	// *
+	// * @param primeNumber
+	// * @return
+	// */
+	// private boolean isPalindrome(String primeNumber) {
+	// return primeNumber.equals(new
+	// StringBuilder(primeNumber).reverse().toString());
+	// }
+	//
+	// /**
+	// * Check if a number is a prime
+	// * @param number
+	// * @return
+	// */
+	// private boolean isPrime(int number) {
+	// // If number is 0 or 1, not a prime
+	// if (number == 0 || number == 1)
+	// return false;
+	//
+	// // If number is greater than 2 and it's divisible by 2, not a prime
+	// if (number > 2 && number % 2 == 0) {
+	// return false;
+	// }
+	//
+	// // the highest is the square root of the number + 1, so we can reduce the
+	// time by squarerooting the number
+	// int top = (int) Math.sqrt(number) + 1;
+	// for (int i = 3; i < top; i += 2) {
+	// if (number % i == 0) {
+	// return false;
+	// }
+	// }
+	// return true;
+	// }
 
 	/**
 	 * Validate user input against a pin that is asked to the user
