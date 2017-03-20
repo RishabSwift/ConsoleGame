@@ -459,7 +459,7 @@ public class Main {
 
 						unlockedItems.add(Items.BACKPACK);
 						showMessage(
-								"You sling the backpack on to your back. A slight and subtle chill runs down your spine. You are unsure wether you feel safer or not.");
+								"You sling the backpack on to your back. A slight and subtle chill runs down your spine. You are unsure whether you feel safer or not.");
 					} else {
 						showMessage("Okay, no problem.");
 					}
@@ -542,11 +542,11 @@ public class Main {
 					// Door 2 leads to the parking lot
 				} else {
 
-					showMessage("The door is locked with a 3 digit pin. You have 3 tries.");
-					showMessage("Please enter the pin.");
+					showMessage("The door is locked with a 3 digit pin. The number is between 100 and 120.");
+					showMessage("You have 3 tries. Please enter the pin.");
 					
 					// Not so easy. They have to guess the pin.
-					int parkingLotDoorPin = generateRandomNumberBetween(100, 999);
+					int parkingLotDoorPin = generateRandomNumberBetween(100, 120);
 
 					// Validate the pin
 					boolean doorPinCorrect = validatePin(parkingLotDoorPin, 3,
@@ -684,7 +684,7 @@ public class Main {
 						showMessage(
 								"The 3 spaces displayed on the top of the number pad suggests that there is a 3 number pin.");
 
-						showMessage("Enter the pin...");
+						showMessage("The pin is between 500 and 510. Enter the pin...");
 						// If the cafeteria doors to the parking lot are
 						// permanently locked
 						if (caffParkingLotDoorsPermanentlyLocked) {
@@ -693,7 +693,7 @@ public class Main {
 						} else {
 
 							// Generate a random number
-							int parkingLotDoorPin = generateRandomNumberBetween(100, 999);
+							int parkingLotDoorPin = generateRandomNumberBetween(500, 510);
 
 							// Validate the pin
 							boolean doorPinCorrect = validatePin(parkingLotDoorPin, 3,
