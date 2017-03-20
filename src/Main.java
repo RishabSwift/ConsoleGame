@@ -24,7 +24,7 @@ import hsa_new.Console;
 public class Main {
 
 	// If debug mode, show debug messages such as randomly generated number, etc
-	public static final boolean DEBUG_MODE = true;
+	public static final boolean DEBUG_MODE = false;
 
 	// All different locations in the game
 	enum Location {
