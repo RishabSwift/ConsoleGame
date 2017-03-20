@@ -12,6 +12,15 @@ import javax.sound.sampled.Clip;
 
 import hsa_new.Console;
 
+
+/**
+ * 
+ * Main.java
+ * This program is a console game. It is a state machine where a user can go to the original location from different locations.
+ * March 01, 2017
+ * @author Rishab Bhatt, Ian Ayuso, Ainslie Forbes
+ *
+ */
 public class Main {
 
 	// If debug mode, show debug messages such as randomly generated number, etc
@@ -119,6 +128,9 @@ public class Main {
 		consoleGame.playGame();
 	}
 
+	/**
+	 * Load audio in game
+	 */
 	private void loadAudio() {
 		try {
 			backgroundMusic = AudioSystem.getClip();
@@ -424,8 +436,7 @@ public class Main {
 					}
 
 					// If user has the backpack but no badge, ask if they want
-					// to
-					// take the badge
+					// to take the badge
 				} else if (userHas(Items.BACKPACK) && !userHas(Items.BADGE)) {
 
 					askQuestion("You seem to find a badge on a dead body. Do you want to carry the badge with you?",
@@ -441,8 +452,7 @@ public class Main {
 					}
 
 					// If user has the badge but no backpack, ask if they want
-					// to
-					// take the backpack
+					// to take the backpack
 				} else if (userHas(Items.BADGE) && !userHas(Items.BACKPACK)) {
 					askQuestion("You have found a backpack... Do you want to take it?", "yes:no");
 					if (userInput.equals("yes")) {
@@ -493,8 +503,7 @@ public class Main {
 
 				} else {
 					// Since the user has no flashlight... ask if they want to
-					// turn
-					// switch on
+					// turn switch on
 					showMessage(
 							"You feel something moving in the dark. You cannot see anything but you feel a light switch on the right side of the wall.");
 					askQuestion("Do you want to turn the switch on?", "yes:no");
@@ -805,8 +814,6 @@ public class Main {
 							"Since you don't know the pin, you can either break through the gate by driving or try guessing the pin.");
 					askQuestion("Which one do you want?", "guess:drive through");
 
-					// boolean driveThrough = userInput.equals("drive through");
-
 					// if user wants to drive through
 					if (userInput.equals("drive through")) {
 
@@ -822,8 +829,7 @@ public class Main {
 						showMessage("The pin is 3 numbers and you have 3 guesses before it permanently locks.");
 
 						// Clear old text by showing current background image
-						// which
-						// clears the text and everything
+						// which clears the text and everything
 						showBackgroundImage(currentBackgroundImage);
 
 						showMessage("Please enter a pin. Remember, you have 3 guesses.");
@@ -977,10 +983,8 @@ public class Main {
 				printToConsole(text.charAt(i), true);
 
 				// if text has a period and text after it, it probably means
-				// that there
-				// are more than one sentences in the text
-				// Pause for a moment after the period before showing another
-				// sentence
+				// that there are more than one sentences in the text
+				// Pause for a moment after the period before showing another sentence
 				if ((text.charAt(i) == '.' || text.charAt(i) == '!')) {
 					// this if statement ensures that we don't get an
 					// ArrayOutOfBounds exception
@@ -1133,43 +1137,6 @@ public class Main {
 		int size = end - start + 1; // include the end number
 		return (int) (Math.random() * size) + start;
 	}
-
-	// /**
-	// * Check if a number is a Palindrome
-	// *
-	// * @param primeNumber
-	// * @return
-	// */
-	// private boolean isPalindrome(String primeNumber) {
-	// return primeNumber.equals(new
-	// StringBuilder(primeNumber).reverse().toString());
-	// }
-	//
-	// /**
-	// * Check if a number is a prime
-	// * @param number
-	// * @return
-	// */
-	// private boolean isPrime(int number) {
-	// // If number is 0 or 1, not a prime
-	// if (number == 0 || number == 1)
-	// return false;
-	//
-	// // If number is greater than 2 and it's divisible by 2, not a prime
-	// if (number > 2 && number % 2 == 0) {
-	// return false;
-	// }
-	//
-	// // the highest is the square root of the number + 1, so we can reduce the
-	// time by squarerooting the number
-	// int top = (int) Math.sqrt(number) + 1;
-	// for (int i = 3; i < top; i += 2) {
-	// if (number % i == 0) {
-	// return false;
-	// }
-	// }
-	// return true;
-	// }
 
 	/**
 	 * Validate user input against a pin that is asked to the user
