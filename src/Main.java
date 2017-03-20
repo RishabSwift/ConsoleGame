@@ -24,7 +24,7 @@ import hsa_new.Console;
 public class Main {
 
 	// If debug mode, show debug messages such as randomly generated number, etc
-	public static final boolean DEBUG_MODE = false;
+	public static final boolean DEBUG_MODE = true;
 
 	// All different locations in the game
 	enum Location {
@@ -239,7 +239,7 @@ public class Main {
 
 		c.getChar();
 
-		currentLocation = Location.BASEMENT;
+		currentLocation = Location.OPERATING_ROOM;
 		stateLocation();
 
 	}
