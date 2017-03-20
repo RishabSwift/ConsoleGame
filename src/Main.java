@@ -597,8 +597,7 @@ public class Main {
 					showMessage("Yum... It seems pretty tasty...");
 					showBackgroundImage(cafeteriaImage);
 
-					showMessage(
-							"After finishing the meal, you sit up from the table. You're tounge sits uncomfortably in your mouth, an unpleasant taste is lingering there.");
+					showMessage("After finishing the meal, you sit up from the table. You're tonge sits uncomfortably in your mouth, an unpleasant taste is lingering there.");
 
 					pauseGame(1);
 
